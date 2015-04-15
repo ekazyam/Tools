@@ -1,0 +1,341 @@
+;################################
+;# Author: Rum Coke
+;# Data  : 2015/04/16
+;# Ver   : 1.0
+;################################
+
+;################################
+;# メイン処理開始
+;################################
+
+;初期化関数呼び出し
+call InitData;
+
+;データ件数カウント
+call DataCounter;
+
+;データ件数に応じた配列初期化
+call InitArray
+
+;ファイル読み込み関数呼び出し
+call FileReader
+
+;サーバリストを表示
+call ShowServerList
+
+;Cygwin接続を判定
+strcompare CON_SERVER CON_CYG
+if result=0 then
+	;Cygwin接続
+	call ConnectCygwin
+else
+	;データファイルから選択したサーバのレコードを収集
+	call SearchData
+
+	;接続に必要なコマンドの形成
+	call MakeConnectCmd
+
+	;接続開始処理
+	call ConnectServer
+endif
+
+;メイン処理終了
+end
+
+;################################
+;# 変数初期化関数
+;################################
+:InitData
+;メッセージ定義
+MSG_CON_SERVER='接続するサーバを選択してください。'
+
+;タイトル定義
+TITLE_CON_SERVER='接続先サーバ一覧'
+
+;********************************
+; 接続先定義ファイル            *
+; CSV形式で以下の書式とする。   *
+; データ1:メニュー選択時の名称  *
+; データ2:サーバホスト名orIP    *
+; データ3:ユーザ名              *
+; データ4:パスワード            *
+; データ5:ポート番号            *
+; データ6:キーファイル(省略可)  *
+;********************************
+CNF_FILE='datalist.txt'
+
+;URL,ユーザレコード件数(初期値)
+CNT_DATA=0
+
+;デリミタ定義
+DELMIT=','
+
+;接続コマンド定義
+CON_CMD=''
+
+;接続先サーバ定義
+CON_SERVER=''
+
+;接続先IP定義
+CON_IP=''
+
+;接続先サーバユーザ定義
+CON_NAME=''
+
+;接続先サーバパスワード定義
+CON_PASS=''
+
+;接続先ポート定義
+CON_PORT=''
+
+;キーファイル定義
+CON_KEY=''
+
+;Cygwin接続定義
+CON_CYG='Cygwin'
+
+;認証方式定義
+strdim AUTH_WORD 2
+AUTH_WORD[0]='password'
+AUTH_WORD[1]='publickey'
+
+;待ち文字定義
+WAIT_CMD_1='$'
+WAIT_CMD_2='#'
+
+;関数終了
+return
+
+;################################
+;# サーバ名称を格納する配列の初期化
+;################################
+:InitArray
+
+;配列の初期化
+strdim SERVER_DATA CNT_DATA
+
+;関数終了
+return
+
+;################################
+;# 接続先サーバをファイルから検索
+;################################
+:SearchData
+
+;ファイルオープン
+fileopen fhandle CNF_FILE 0
+
+;ファイル全件表示
+while 1
+	; 一行読み込み
+	filereadln fhandle line
+	if result=1 then
+		break
+	endif
+	
+	; 読み込んだ行CSV形式で分割
+	strsplit line ','
+	
+	;接続先サーバ(変数)とデータファイルを比較
+	strcompare CON_SERVER groupmatchstr1
+	if result==0 then
+	
+		;接続先IP定義
+		CON_IP=groupmatchstr2
+
+		;ユーザ名
+		CON_NAME=groupmatchstr3
+		
+		;パスワード
+		CON_PASS=groupmatchstr4
+		
+		;接続ポート
+		CON_PORT=groupmatchstr5
+
+		;キーファイル
+		CON_KEY=groupmatchstr6
+
+		;処理終了
+		break
+		
+	endif
+
+endwhile
+
+; ファイルクローズ
+fileclose fhandle
+
+;関数終了
+return
+
+;################################
+;# 接続先サーバの表示
+;################################
+:ShowServerList
+listbox MSG_CON_SERVER TITLE_CON_SERVER SERVER_DATA
+
+;選択したデータの添字を保存
+SELECT=result
+
+;選択先判定
+;キャンセル、もしくはバツ閉じを選択時、即時終了
+if SELECT==-1 then
+	exit
+else
+	;接続先サーバ名称を保存
+	CON_SERVER=SERVER_DATA[SELECT]
+endif
+
+;関数終了
+return
+
+;################################
+;# データファイルの件数をカウント
+;################################
+:DataCounter
+
+;ファイルオープン
+fileopen fhandle CNF_FILE 0
+
+;ファイル全件表示
+while 1
+	; 一行読み込み
+	filereadln fhandle line
+	if result=1 then 
+		break
+	endif
+	
+	;データ件数を加算
+	CNT_DATA=CNT_DATA + 1
+endwhile
+
+; ファイルクローズ
+fileclose fhandle
+
+;関数終了
+return
+
+;################################
+;# サーバ名称を配列に確保
+;################################
+:FileReader
+
+;URL,ユーザ定義を格納する配列へ格納するための添字
+CNT_WORK=0
+
+;ファイルオープン
+fileopen fhandle CNF_FILE 0
+
+;ファイル全件表示
+for CNT_WORK 0 CNT_DATA
+
+	; 一行読み込み
+	filereadln fhandle line
+	if result=1 then 
+		break
+	endif
+    
+	; 読み込んだ行CSV形式で分割
+	strsplit line ','
+
+	;配列にサーバ名称を格納
+	SERVER_DATA[CNT_WORK] = groupmatchstr1
+	
+next
+
+; ファイルクローズ
+fileclose fhandle
+
+;関数終了
+return
+
+;################################
+;# コマンド形成
+;################################
+:MakeConnectCmd
+
+;接続コマンドの形成
+;IPを付与
+strconcat CON_CMD CON_IP
+
+;ポートを付与
+strconcat CON_CMD ':'
+strconcat CON_CMD CON_PORT
+
+;接続コマンド生成(定型文)
+strconcat CON_CMD ' /ssh /auth='
+
+;認証方式分岐
+strcompare CON_KEY ''
+if result=0 then
+	;password認証
+	strconcat CON_CMD AUTH_WORD[0]
+else
+	;keyファイル認証
+	strconcat CON_CMD AUTH_WORD[1]
+endif
+
+;接続コマンド生成(定型文)
+strconcat CON_CMD ' /user='
+
+;接続ユーザを付与
+strconcat CON_CMD CON_NAME
+
+;接続コマンド生成(定型文)
+strconcat CON_CMD ' /passwd='
+
+;接続パスワードを付与
+strconcat CON_CMD CON_PASS
+
+;認証方式分岐(キー利用)
+strcompare CON_KEY ''
+if result<>0 then
+	;接続コマンド生成(定型文)
+	strconcat CON_CMD ' /keyfile='
+	strconcat CON_CMD CON_KEY
+endif
+
+;関数終了
+return
+
+;################################
+;# 共通後処理
+;################################
+:CommonSetting
+
+;設定ファイル読み込み
+restoresetup 'teraterm.ini'
+
+;ウインドウのタイトルを接続先の名称に変更
+settitle CON_SERVER
+
+;関数終了
+return
+
+;################################
+;# サーバ接続処理
+;################################
+:ConnectServer
+
+;サーバへ接続
+connect CON_CMD
+
+;接続待ち
+;waitregex WAIT_CMD_1 WAIT_CMD_2
+
+;共通事後処理
+call CommonSetting
+
+;関数終了
+return
+
+;################################
+;# Cygwin接続処理
+;################################
+:ConnectCygwin
+
+;Cygwin接続
+cygconnect
+
+;関数終了
+return
