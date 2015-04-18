@@ -1,364 +1,402 @@
 ;################################
-;# ãƒ¡ã‚¤ãƒ³å‡¦ç†é–‹å§‹
+;# ƒƒCƒ“ˆ—ŠJŽn
 ;################################
+;‰Šú‰»ŠÖ”ŒÄ‚Ño‚µ
+call InitData
 
-;åˆæœŸåŒ–é–¢æ•°å‘¼ã³å‡ºã—
-call InitData;
+;ƒo[ƒWƒ‡ƒ“ƒ`ƒFƒbƒN
+call CheckVersion
 
-;ãƒ‡ãƒ¼ã‚¿ä»¶æ•°ã‚«ã‚¦ãƒ³ãƒˆ
-call DataCounter;
+;ƒf[ƒ^Œ”ƒJƒEƒ“ƒg
+call DataCounter
 
-;ãƒ‡ãƒ¼ã‚¿ä»¶æ•°ã«å¿œã˜ãŸé…åˆ—åˆæœŸåŒ–
+;ƒf[ƒ^Œ”‚É‰ž‚¶‚½”z—ñ‰Šú‰»
 call InitArray
 
-;ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿é–¢æ•°å‘¼ã³å‡ºã—
+;ƒtƒ@ƒCƒ‹“Ç‚Ýž‚ÝŠÖ”ŒÄ‚Ño‚µ
 call FileReader
 
-;ã‚µãƒ¼ãƒãƒªã‚¹ãƒˆã‚’è¡¨ç¤º
+;ƒT[ƒoƒŠƒXƒg‚ð•\Ž¦
 call ShowServerList
 
-;CygwinæŽ¥ç¶šã‚’åˆ¤å®š
+;CygwinÚ‘±‚ð”»’è
 strcompare CON_SERVER CON_CYG
 if result=0 then
-	;CygwinæŽ¥ç¶š
+	;CygwinÚ‘±
 	call ConnectCygwin
 else
-	;ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰é¸æŠžã—ãŸã‚µãƒ¼ãƒã®ãƒ¬ã‚³ãƒ¼ãƒ‰ã‚’åŽé›†
+	;ƒf[ƒ^ƒtƒ@ƒCƒ‹‚©‚ç‘I‘ð‚µ‚½ƒT[ƒo‚ÌƒŒƒR[ƒh‚ðŽûW
 	call SearchData
 
-	;æŽ¥ç¶šã«å¿…è¦ãªã‚³ãƒžãƒ³ãƒ‰ã®å½¢æˆ
+	;Ú‘±‚É•K—v‚ÈƒRƒ}ƒ“ƒh‚ÌŒ`¬
 	call MakeConnectCmd
 
-	;æŽ¥ç¶šé–‹å§‹å‡¦ç†
+	;Ú‘±ŠJŽnˆ—
 	call ConnectServer
 endif
 
-;ãƒ¡ã‚¤ãƒ³å‡¦ç†çµ‚äº†
+;ƒƒCƒ“ˆ—I—¹
 end
 
 ;################################
-;# å¤‰æ•°åˆæœŸåŒ–é–¢æ•°
+;# ƒo[ƒWƒ‡ƒ“ƒ`ƒFƒbƒN
+;################################
+:CheckVersion
+
+;“®ì‚·‚éteraterm‚Ìƒo[ƒWƒ‡ƒ“ƒ`ƒFƒbƒN
+getver USER_VERSION NECESSARY_VERSION
+if result=-1 then
+	;ƒAƒ‰[ƒgƒƒbƒZ[ƒW‚Ì¶¬
+	strconcat MSG_VERSION_ERR '\n'
+	strconcat MSG_VERSION_ERR MSG_VERSION_ERR_ALLOW
+	strconcat MSG_VERSION_ERR NECESSARY_VERSION
+	strconcat MSG_VERSION_ERR 'ˆÈã\n'
+	strconcat MSG_VERSION_ERR MSG_VERSION_ERR_DENY
+	strconcat MSG_VERSION_ERR USER_VERSION
+	
+	;ƒAƒ‰[ƒgƒƒbƒZ[ƒW‚Ì“ÁŽê•¶Žš‚Ì’uŠ·
+	strspecial MSG_VERSION_ERR
+	
+	messagebox MSG_VERSION_ERR TITLE_VERSION_ERR
+	exit
+endif
+
+;ŠÖ”I—¹
+return
+
+;################################
+;# •Ï”‰Šú‰»ŠÖ”
 ;################################
 :InitData
-;ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å®šç¾©
-MSG_CON_SERVER='æŽ¥ç¶šã™ã‚‹ã‚µãƒ¼ãƒã‚’é¸æŠžã—ã¦ãã ã•ã„ã€‚'
+;ƒƒbƒZ[ƒW’è‹`
+MSG_CON_SERVER='Ú‘±‚·‚éƒT[ƒo‚ð‘I‘ð‚µ‚Ä‚­‚¾‚³‚¢B'
+MSG_VERSION_ERR='Teraterm‚Ìƒo[ƒWƒ‡ƒ“‚ðXV‚µ‚Ä‚­‚¾‚³‚¢B'
+MSG_VERSION_ERR_ALLOW='“®ì‚É•K—v‚Èƒo[ƒWƒ‡ƒ“F\t'
+MSG_VERSION_ERR_DENY='Œ»ó‚Ìƒo[ƒWƒ‡ƒ“F\t\t'
 
-;ã‚¿ã‚¤ãƒˆãƒ«å®šç¾©
-TITLE_CON_SERVER='æŽ¥ç¶šå…ˆã‚µãƒ¼ãƒä¸€è¦§'
+;ƒ^ƒCƒgƒ‹’è‹`
+TITLE_CON_SERVER='Ú‘±æƒT[ƒoˆê——'
+TITLE_VERSION_ERR='“®ìŠÂ‹«ƒ`ƒFƒbƒN'
 
 ;********************************
-; æŽ¥ç¶šå…ˆå®šç¾©ãƒ•ã‚¡ã‚¤ãƒ«            *
-; CSVå½¢å¼ã§ä»¥ä¸‹ã®æ›¸å¼ã¨ã™ã‚‹ã€‚   *
-; ãƒ‡ãƒ¼ã‚¿1:ãƒ¡ãƒ‹ãƒ¥ãƒ¼é¸æŠžæ™‚ã®åç§°  *
-; ãƒ‡ãƒ¼ã‚¿2:ã‚µãƒ¼ãƒãƒ›ã‚¹ãƒˆåorIP    *
-; ãƒ‡ãƒ¼ã‚¿3:ãƒ¦ãƒ¼ã‚¶å              *
-; ãƒ‡ãƒ¼ã‚¿4:ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰            *
-; ãƒ‡ãƒ¼ã‚¿5:ãƒãƒ¼ãƒˆç•ªå·            *
-; ãƒ‡ãƒ¼ã‚¿6:ã‚­ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«(çœç•¥å¯)  *
+; Ú‘±æ’è‹`ƒtƒ@ƒCƒ‹            *
+; CSVŒ`Ž®‚ÅˆÈ‰º‚Ì‘Ž®‚Æ‚·‚éB   *
+; ƒf[ƒ^1:ƒƒjƒ…[‘I‘ðŽž‚Ì–¼Ì  *
+; ƒf[ƒ^2:ƒT[ƒoƒzƒXƒg–¼orIP    *
+; ƒf[ƒ^3:ƒ†[ƒU–¼              *
+; ƒf[ƒ^4:ƒpƒXƒ[ƒh            *
+; ƒf[ƒ^5:ƒ|[ƒg”Ô†            *
+; ƒf[ƒ^6:ƒL[ƒtƒ@ƒCƒ‹(È—ª‰Â)  *
 ;********************************
 CNF_FILE='datalist.txt'
 
-;URL,ãƒ¦ãƒ¼ã‚¶ãƒ¬ã‚³ãƒ¼ãƒ‰ä»¶æ•°(åˆæœŸå€¤)
+;URL,ƒ†[ƒUƒŒƒR[ƒhŒ”(‰Šú’l)
 CNT_DATA=0
 
-;ãƒ‡ãƒªãƒŸã‚¿å®šç¾©
+;ƒfƒŠƒ~ƒ^’è‹`
 DELMIT=','
 
-;æŽ¥ç¶šã‚³ãƒžãƒ³ãƒ‰å®šç¾©
+;Ú‘±ƒRƒ}ƒ“ƒh’è‹`
 CON_CMD=''
 
-;æŽ¥ç¶šå…ˆã‚µãƒ¼ãƒå®šç¾©
+;Ú‘±æƒT[ƒo’è‹`
 CON_SERVER=''
 
-;æŽ¥ç¶šå…ˆIPå®šç¾©
+;Ú‘±æIP’è‹`
 CON_IP=''
 
-;æŽ¥ç¶šå…ˆã‚µãƒ¼ãƒãƒ¦ãƒ¼ã‚¶å®šç¾©
+;Ú‘±æƒT[ƒoƒ†[ƒU’è‹`
 CON_NAME=''
 
-;æŽ¥ç¶šå…ˆã‚µãƒ¼ãƒãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰å®šç¾©
+;Ú‘±æƒT[ƒoƒpƒXƒ[ƒh’è‹`
 CON_PASS=''
 
-;æŽ¥ç¶šå…ˆãƒãƒ¼ãƒˆå®šç¾©
+;Ú‘±æƒ|[ƒg’è‹`
 CON_PORT=''
 
-;ã‚­ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«å®šç¾©
+;ƒL[ƒtƒ@ƒCƒ‹’è‹`
 CON_KEY=''
 
-;CygwinæŽ¥ç¶šå®šç¾©
+;CygwinÚ‘±’è‹`
 CON_CYG='Cygwin'
 
-;èªè¨¼æ–¹å¼å®šç¾©
+;”FØ•ûŽ®’è‹`
 strdim AUTH_WORD 2
 AUTH_WORD[0]='password'
 AUTH_WORD[1]='publickey'
 
-;å¾…ã¡æ–‡å­—å®šç¾©
+;‘Ò‚¿•¶Žš’è‹`
 WAIT_CMD_1='$'
 WAIT_CMD_2='#'
 
-;ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒžãƒƒãƒ”ãƒ³ã‚°ãƒ•ã‚¡ã‚¤ãƒ«å®šç¾©
+;ƒL[ƒ{[ƒhƒ}ƒbƒsƒ“ƒOƒtƒ@ƒCƒ‹’è‹`
 KEY_MAP_FILE='IBMKEYB.CNF'
 
-;ttpmacro.exeã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å®šç¾©
+;ttpmacro.exe‚ÌƒfƒBƒŒƒNƒgƒŠ‚ð’è‹`
 KEY_MAP='';
 
-;é–¢æ•°çµ‚äº†
+;“®ì‚É•K—v‚Èƒo[ƒWƒ‡ƒ“‚Ì’è‹`
+NECESSARY_VERSION='4.72'
+
+;“®ìŠÂ‹«‚Ìƒo[ƒWƒ‡ƒ“‚Ì’è‹`
+USER_VERSION=''
+
+;ŠÖ”I—¹
 return
 
 ;################################
-;# ã‚µãƒ¼ãƒåç§°ã‚’æ ¼ç´ã™ã‚‹é…åˆ—ã®åˆæœŸåŒ–
+;# ƒT[ƒo–¼Ì‚ðŠi”[‚·‚é”z—ñ‚Ì‰Šú‰»
 ;################################
 :InitArray
 
-;é…åˆ—ã®åˆæœŸåŒ–
+;”z—ñ‚Ì‰Šú‰»
 strdim SERVER_DATA CNT_DATA
 
-;é–¢æ•°çµ‚äº†
+;ŠÖ”I—¹
 return
 
 ;################################
-;# æŽ¥ç¶šå…ˆã‚µãƒ¼ãƒã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æ¤œç´¢
+;# Ú‘±æƒT[ƒo‚ðƒtƒ@ƒCƒ‹‚©‚çŒŸõ
 ;################################
 :SearchData
 
-;ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
+;ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
 fileopen fhandle CNF_FILE 0
 
-;ãƒ•ã‚¡ã‚¤ãƒ«å…¨ä»¶è¡¨ç¤º
+;ƒtƒ@ƒCƒ‹‘SŒ•\Ž¦
 while 1
-	; ä¸€è¡Œèª­ã¿è¾¼ã¿
+	; ˆês“Ç‚Ýž‚Ý
 	filereadln fhandle line
 	if result=1 then
 		break
 	endif
 	
-	; èª­ã¿è¾¼ã‚“ã è¡ŒCSVå½¢å¼ã§åˆ†å‰²
+	; “Ç‚Ýž‚ñ‚¾sCSVŒ`Ž®‚Å•ªŠ„
 	strsplit line ','
 	
-	;æŽ¥ç¶šå…ˆã‚µãƒ¼ãƒ(å¤‰æ•°)ã¨ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¯”è¼ƒ
+	;Ú‘±æƒT[ƒo(•Ï”)‚Æƒf[ƒ^ƒtƒ@ƒCƒ‹‚ð”äŠr
 	strcompare CON_SERVER groupmatchstr1
 	if result==0 then
 	
-		;æŽ¥ç¶šå…ˆIPå®šç¾©
+		;Ú‘±æIP’è‹`
 		CON_IP=groupmatchstr2
 
-		;ãƒ¦ãƒ¼ã‚¶å
+		;ƒ†[ƒU–¼
 		CON_NAME=groupmatchstr3
 		
-		;ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰
+		;ƒpƒXƒ[ƒh
 		CON_PASS=groupmatchstr4
 		
-		;æŽ¥ç¶šãƒãƒ¼ãƒˆ
+		;Ú‘±ƒ|[ƒg
 		CON_PORT=groupmatchstr5
 
-		;ã‚­ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«
+		;ƒL[ƒtƒ@ƒCƒ‹
 		CON_KEY=groupmatchstr6
 
-		;å‡¦ç†çµ‚äº†
+		;ˆ—I—¹
 		break
 		
 	endif
 
 endwhile
 
-; ãƒ•ã‚¡ã‚¤ãƒ«ã‚¯ãƒ­ãƒ¼ã‚º
+; ƒtƒ@ƒCƒ‹ƒNƒ[ƒY
 fileclose fhandle
 
-;é–¢æ•°çµ‚äº†
+;ŠÖ”I—¹
 return
 
 ;################################
-;# æŽ¥ç¶šå…ˆã‚µãƒ¼ãƒã®è¡¨ç¤º
+;# Ú‘±æƒT[ƒo‚Ì•\Ž¦
 ;################################
 :ShowServerList
 listbox MSG_CON_SERVER TITLE_CON_SERVER SERVER_DATA
 
-;é¸æŠžã—ãŸãƒ‡ãƒ¼ã‚¿ã®æ·»å­—ã‚’ä¿å­˜
+;‘I‘ð‚µ‚½ƒf[ƒ^‚Ì“YŽš‚ð•Û‘¶
 SELECT=result
 
-;é¸æŠžå…ˆåˆ¤å®š
-;ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã€ã‚‚ã—ãã¯ãƒãƒ„é–‰ã˜ã‚’é¸æŠžæ™‚ã€å³æ™‚çµ‚äº†
+;‘I‘ðæ”»’è
+;ƒLƒƒƒ“ƒZƒ‹A‚à‚µ‚­‚Íƒoƒc•Â‚¶‚ð‘I‘ðŽžA‘¦ŽžI—¹
 if SELECT==-1 then
 	exit
 else
-	;æŽ¥ç¶šå…ˆã‚µãƒ¼ãƒåç§°ã‚’ä¿å­˜
+	;Ú‘±æƒT[ƒo–¼Ì‚ð•Û‘¶
 	CON_SERVER=SERVER_DATA[SELECT]
 endif
 
-;é–¢æ•°çµ‚äº†
+;ŠÖ”I—¹
 return
 
 ;################################
-;# ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®ä»¶æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
+;# ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ÌŒ”‚ðƒJƒEƒ“ƒg
 ;################################
 :DataCounter
 
-;ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
+;ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
 fileopen fhandle CNF_FILE 0
 
-;ãƒ•ã‚¡ã‚¤ãƒ«å…¨ä»¶è¡¨ç¤º
+;ƒtƒ@ƒCƒ‹‘SŒ•\Ž¦
 while 1
-	; ä¸€è¡Œèª­ã¿è¾¼ã¿
+	; ˆês“Ç‚Ýž‚Ý
 	filereadln fhandle line
 	if result=1 then 
 		break
 	endif
 	
-	;ãƒ‡ãƒ¼ã‚¿ä»¶æ•°ã‚’åŠ ç®—
+	;ƒf[ƒ^Œ”‚ð‰ÁŽZ
 	CNT_DATA=CNT_DATA + 1
 endwhile
 
-; ãƒ•ã‚¡ã‚¤ãƒ«ã‚¯ãƒ­ãƒ¼ã‚º
+; ƒtƒ@ƒCƒ‹ƒNƒ[ƒY
 fileclose fhandle
 
-;é–¢æ•°çµ‚äº†
+;ŠÖ”I—¹
 return
 
 ;################################
-;# ã‚µãƒ¼ãƒåç§°ã‚’é…åˆ—ã«ç¢ºä¿
+;# ƒT[ƒo–¼Ì‚ð”z—ñ‚ÉŠm•Û
 ;################################
 :FileReader
 
-;URL,ãƒ¦ãƒ¼ã‚¶å®šç¾©ã‚’æ ¼ç´ã™ã‚‹é…åˆ—ã¸æ ¼ç´ã™ã‚‹ãŸã‚ã®æ·»å­—
+;URL,ƒ†[ƒU’è‹`‚ðŠi”[‚·‚é”z—ñ‚ÖŠi”[‚·‚é‚½‚ß‚Ì“YŽš
 CNT_WORK=0
 
-;ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
+;ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
 fileopen fhandle CNF_FILE 0
 
-;ãƒ•ã‚¡ã‚¤ãƒ«å…¨ä»¶è¡¨ç¤º
+;ƒtƒ@ƒCƒ‹‘SŒ•\Ž¦
 for CNT_WORK 0 CNT_DATA
 
-	; ä¸€è¡Œèª­ã¿è¾¼ã¿
+	; ˆês“Ç‚Ýž‚Ý
 	filereadln fhandle line
 	if result=1 then 
 		break
 	endif
     
-	; èª­ã¿è¾¼ã‚“ã è¡ŒCSVå½¢å¼ã§åˆ†å‰²
+	; “Ç‚Ýž‚ñ‚¾sCSVŒ`Ž®‚Å•ªŠ„
 	strsplit line ','
 
-	;é…åˆ—ã«ã‚µãƒ¼ãƒåç§°ã‚’æ ¼ç´
+	;”z—ñ‚ÉƒT[ƒo–¼Ì‚ðŠi”[
 	SERVER_DATA[CNT_WORK] = groupmatchstr1
 	
 next
 
-; ãƒ•ã‚¡ã‚¤ãƒ«ã‚¯ãƒ­ãƒ¼ã‚º
+; ƒtƒ@ƒCƒ‹ƒNƒ[ƒY
 fileclose fhandle
 
-;é–¢æ•°çµ‚äº†
+;ŠÖ”I—¹
 return
 
 ;################################
-;# ã‚³ãƒžãƒ³ãƒ‰å½¢æˆ
+;# ƒRƒ}ƒ“ƒhŒ`¬
 ;################################
 :MakeConnectCmd
 
-;æŽ¥ç¶šã‚³ãƒžãƒ³ãƒ‰ã®å½¢æˆ
-;IPã‚’ä»˜ä¸Ž
+;Ú‘±ƒRƒ}ƒ“ƒh‚ÌŒ`¬
+;IP‚ð•t—^
 strconcat CON_CMD CON_IP
 
-;ãƒãƒ¼ãƒˆã‚’ä»˜ä¸Ž
+;ƒ|[ƒg‚ð•t—^
 strconcat CON_CMD ':'
 strconcat CON_CMD CON_PORT
 
-;æŽ¥ç¶šã‚³ãƒžãƒ³ãƒ‰ç”Ÿæˆ(å®šåž‹æ–‡)
+;Ú‘±ƒRƒ}ƒ“ƒh¶¬(’èŒ^•¶)
 strconcat CON_CMD ' /ssh /auth='
 
-;èªè¨¼æ–¹å¼åˆ†å²
+;”FØ•ûŽ®•ªŠò
 strcompare CON_KEY ''
 if result=0 then
-	;passwordèªè¨¼
+	;password”FØ
 	strconcat CON_CMD AUTH_WORD[0]
 else
-	;keyãƒ•ã‚¡ã‚¤ãƒ«èªè¨¼
+	;keyƒtƒ@ƒCƒ‹”FØ
 	strconcat CON_CMD AUTH_WORD[1]
 endif
 
-;æŽ¥ç¶šã‚³ãƒžãƒ³ãƒ‰ç”Ÿæˆ(å®šåž‹æ–‡)
+;Ú‘±ƒRƒ}ƒ“ƒh¶¬(’èŒ^•¶)
 strconcat CON_CMD ' /user='
 
-;æŽ¥ç¶šãƒ¦ãƒ¼ã‚¶ã‚’ä»˜ä¸Ž
+;Ú‘±ƒ†[ƒU‚ð•t—^
 strconcat CON_CMD CON_NAME
 
-;æŽ¥ç¶šã‚³ãƒžãƒ³ãƒ‰ç”Ÿæˆ(å®šåž‹æ–‡)
+;Ú‘±ƒRƒ}ƒ“ƒh¶¬(’èŒ^•¶)
 strconcat CON_CMD ' /passwd='
 
-;æŽ¥ç¶šãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã‚’ä»˜ä¸Ž
+;Ú‘±ƒpƒXƒ[ƒh‚ð•t—^
 strconcat CON_CMD CON_PASS
 
-;èªè¨¼æ–¹å¼åˆ†å²(ã‚­ãƒ¼åˆ©ç”¨)
+;”FØ•ûŽ®•ªŠò(ƒL[—˜—p)
 strcompare CON_KEY ''
 if result<>0 then
-	;æŽ¥ç¶šã‚³ãƒžãƒ³ãƒ‰ç”Ÿæˆ(å®šåž‹æ–‡)
+	;Ú‘±ƒRƒ}ƒ“ƒh¶¬(’èŒ^•¶)
 	strconcat CON_CMD ' /keyfile='
 	strconcat CON_CMD CON_KEY
 endif
 
-;é–¢æ•°çµ‚äº†
+;ŠÖ”I—¹
 return
 
 ;################################
-;# å…±é€šå¾Œå‡¦ç†
+;# ‹¤’ÊŒãˆ—
 ;################################
 :CommonSetting
 
-;è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+;Ý’èƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ý
 restoresetup 'teraterm.ini'
 
-;ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã®ã‚¿ã‚¤ãƒˆãƒ«ã‚’æŽ¥ç¶šå…ˆã®åç§°ã«å¤‰æ›´
+;ƒEƒCƒ“ƒhƒE‚Ìƒ^ƒCƒgƒ‹‚ðÚ‘±æ‚Ì–¼Ì‚É•ÏX
 settitle CON_SERVER
 
-;ã‚­ãƒ¼ãƒžãƒƒãƒ—ã®è¨­å®š
+;ƒL[ƒ}ƒbƒv‚ÌÝ’è
 call KeyBoardMapping
 
-;é–¢æ•°çµ‚äº†
+;ŠÖ”I—¹
 return
 
 ;################################
-;# ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+;# ƒL[ƒ{[ƒhƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ý
 ;################################
 :KeyBoardMapping
 
-;ã‚­ãƒ¼ãƒžãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ãƒ«ãƒ‘ã‚¹å®šç¾©
+;ƒL[ƒ}ƒbƒvƒtƒ@ƒCƒ‹‚Ìƒtƒ‹ƒpƒX’è‹`
 getttdir KEY_MAP
 strconcat KEY_MAP '\'
 strconcat KEY_MAP KEY_MAP_FILE
 
-;ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«ã®å­˜åœ¨ãƒã‚§ãƒƒã‚¯
+;ƒL[ƒ{[ƒhƒtƒ@ƒCƒ‹‚Ì‘¶Ýƒ`ƒFƒbƒN
 filesearch KEY_MAP
 if result=1 then
-	;ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+	;ƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ý
 	loadkeymap KEY_MAP_FILE
 endif
 
-;é–¢æ•°çµ‚äº†
+;ŠÖ”I—¹
 return;
 
 ;################################
-;# ã‚µãƒ¼ãƒæŽ¥ç¶šå‡¦ç†
+;# ƒT[ƒoÚ‘±ˆ—
 ;################################
 :ConnectServer
 
-;ã‚µãƒ¼ãƒã¸æŽ¥ç¶š
+;ƒT[ƒo‚ÖÚ‘±
 connect CON_CMD
 
-;æŽ¥ç¶šå¾…ã¡
+;Ú‘±‘Ò‚¿
 ;waitregex WAIT_CMD_1 WAIT_CMD_2
 
-;å…±é€šäº‹å¾Œå‡¦ç†
+;‹¤’ÊŽ–Œãˆ—
 call CommonSetting
 
-;é–¢æ•°çµ‚äº†
+;ŠÖ”I—¹
 return
 
 ;################################
-;# CygwinæŽ¥ç¶šå‡¦ç†
+;# CygwinÚ‘±ˆ—
 ;################################
 :ConnectCygwin
 
-;CygwinæŽ¥ç¶š
+;CygwinÚ‘±
 cygconnect
 
-;é–¢æ•°çµ‚äº†
+;ŠÖ”I—¹
 return
