@@ -1,10 +1,4 @@
 ;################################
-;# Author: Rum Coke
-;# Data  : 2015/04/16
-;# Ver   : 1.0
-;################################
-
-;################################
 ;# メイン処理開始
 ;################################
 
@@ -102,6 +96,12 @@ AUTH_WORD[1]='publickey'
 ;待ち文字定義
 WAIT_CMD_1='$'
 WAIT_CMD_2='#'
+
+;キーボードマッピングファイル定義
+KEY_MAP_FILE='IBMKEYB.CNF'
+
+;ttpmacro.exeのディレクトリを定義
+KEY_MAP='';
 
 ;関数終了
 return
@@ -309,8 +309,31 @@ restoresetup 'teraterm.ini'
 ;ウインドウのタイトルを接続先の名称に変更
 settitle CON_SERVER
 
+;キーマップの設定
+call KeyBoardMapping
+
 ;関数終了
 return
+
+;################################
+;# キーボードファイル読み込み
+;################################
+:KeyBoardMapping
+
+;キーマップファイルのフルパス定義
+getttdir KEY_MAP
+strconcat KEY_MAP '\'
+strconcat KEY_MAP KEY_MAP_FILE
+
+;キーボードファイルの存在チェック
+filesearch KEY_MAP
+if result=1 then
+	;ファイル読み込み
+	loadkeymap KEY_MAP_FILE
+endif
+
+;関数終了
+return;
 
 ;################################
 ;# サーバ接続処理
