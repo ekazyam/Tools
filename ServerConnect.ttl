@@ -4,6 +4,9 @@
 ;初期化関数呼び出し
 call InitData
 
+;タイムアウト設定
+call SetTimeout
+
 ;バージョンチェック
 call CheckVersion
 
@@ -40,6 +43,16 @@ call CodeCheck
 
 ;メイン処理終了
 end
+
+;################################
+;# タイムアウト設定
+;################################
+:SetTimeout
+
+timeout=TIMEOUT_SECOND
+
+;関数終了
+return
 
 ;################################
 ;# バージョンチェック
@@ -105,12 +118,14 @@ return
 :InitData
 ;メッセージ定義
 MSG_CON_SERVER='接続するサーバを選択してください。'
+MSG_CON_SERVER_ERR='接続がタイムアウトしました。'
 MSG_VERSION_ERR='Teratermのバージョンを更新してください。'
 MSG_VERSION_ERR_ALLOW='動作に必要なバージョン：\t'
 MSG_VERSION_ERR_DENY='現状のバージョン：\t\t'
 
 ;タイトル定義
 TITLE_CON_SERVER='接続先サーバ一覧'
+TITLE_CON_SERVER_ERR='接続エラー'
 TITLE_VERSION_ERR='動作環境チェック'
 
 ;********************************
@@ -199,6 +214,9 @@ CODE_SEND_UTF=54113
 
 ;文字コード 受信 UTF-8
 CODE_RECV_UTF=54013
+
+;タイムアウト秒数定義
+TIMEOUT_SECOND=60
 
 ;関数終了
 return
@@ -433,12 +451,32 @@ endif
 return;
 
 ;################################
+;# タイムアウト処理
+;################################
+:TimeOutConnection
+
+;タイムアウト判定
+if result<>2 then
+	;接続失敗を通知するダイアログを表示
+	messagebox MSG_CON_SERVER_ERR TITLE_CON_SERVER_ERR
+	
+	;マクロ終了
+	exit
+endif
+
+;関数終了
+return
+
+;################################
 ;# サーバ接続処理
 ;################################
 :ConnectServer
 
 ;サーバへ接続
 connect CON_CMD
+
+;タイムアウト判定処理
+call TimeOutConnection
 
 ;共通事後処理
 call CommonSetting
@@ -453,6 +491,9 @@ return
 
 ;Cygwin接続
 cygconnect
+
+;タイムアウト判定処理
+call TimeOutConnection
 
 ;関数終了
 return
