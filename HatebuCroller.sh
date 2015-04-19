@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/04/19
-# Ver   : 0.9
+# Ver   : 0.9beta
 ################################
 # Web Page Crolling.
 function WebCroller()
@@ -14,14 +14,17 @@ function WebCroller()
 	HtmlAnalyze
 
 	# Diff Check
-	#HtmlDiffCheck
+	HtmlDiffCheck
 }
 
 # Hatebu News Page Analyze
 function HtmlAnalyze()
 {
-	# Old News Page Moving
-	test -e ${FILE_TEMP_NEW} && mv ${FILE_TEMP_NEW} ${FILE_TEMP_OLD}
+	# Html File Exist Check
+	test -e ${FILE_TEMP_NEW} || exit
+
+	# Rename New File to Old File
+	mv ${FILE_TEMP_NEW} ${FILE_TEMP_OLD}
 
 	# Convert to News Title and URL
 	grep 'class="hb-entry-link-container"' ${FILE} \
@@ -34,10 +37,11 @@ function HtmlAnalyze()
 }
 
 # Hatebu News Page Diff Check
-#function HtmlDiffCheck()
-#{
+function HtmlDiffCheck()
+{
 	# Diff Check
-#}
+	diff ${FILE_TEMP_NEW} ${FILE_TEMP_OLD} | grep -e ^\< | sed -E 's/<[[:space:]]//g'
+}
 
 ##################
 # Main Function
