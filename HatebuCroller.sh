@@ -47,8 +47,8 @@ function HtmlDiffCheck()
 function TweetHatebu()
 {
 	while read NEWS_MSG; do
-		echo ${NEWS_MSG}{$NEWS_MSG}
-		#yes | tw ${NEWS_MSG}{$NEWS_MSG}
+		echo ${MSG_BOT}${NEWS_MSG}
+		#yes | tw ${MSG_BOT}${NEWS_MSG}
 	done < ${FILE_TEMP_TMP}
 }
 
@@ -58,13 +58,15 @@ function TweetHatebu()
 # Path Setting
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# Target URL.
-URL=(
-"http://b.hatena.ne.jp/hotentry/it"
-)
 
 # Hatebu Html File.
 FILE='/tmp/hatebu.html'
+
+# Target URL List.
+TAEGET_LIST='target_list.txt'
+
+# Target URL.
+URL=(`cat ${TAEGET_LIST}`)
 
 # Bot Message
 MSG_BOT='[自動ツイート]'
@@ -73,6 +75,7 @@ MSG_BOT='[自動ツイート]'
 for (( count=0; count<${#URL[*]}; count++ ))
 do
 	# Set Temp File Name.
+	echo ${URL[$count]}
 	FILE_TEMP_NEW=`echo /tmp/hatebu-``echo ${URL[$count]} | awk -F\/ '{print $5}'``echo .html.new`
 	FILE_TEMP_OLD=`echo /tmp/hatebu-``echo ${URL[$count]} | awk -F\/ '{print $5}'``echo .html.old`
 	FILE_TEMP_TMP=`echo /tmp/hatebu-``echo ${URL[$count]} | awk -F\/ '{print $5}'``echo .html.tmp`
