@@ -21,7 +21,7 @@ function WebCroller()
 function HtmlAnalyze()
 {
 	# Old News Page Moving
-	mv ${FILE_TEMP_NEW} ${FILE_TEMP_OLD}
+	test -e ${FILE_TEMP_NEW} && mv ${FILE_TEMP_NEW} ${FILE_TEMP_OLD}
 
 	# Convert to News Title and URL
 	grep 'class="hb-entry-link-container"' ${FILE} \
