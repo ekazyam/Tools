@@ -2,13 +2,8 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/04/19
-# Ver   : 1.0
+# Ver   : 0.9
 ################################
-
-##################
-# Web Croller
-##################
-
 # Web Page Crolling.
 function WebCroller()
 {
@@ -51,9 +46,9 @@ function HtmlAnalyze()
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Target URL.
-URL=(\
- "http://b.hatena.ne.jp/hotentry/it" \
- "http://b.hatena.ne.jp/hotentry/general" \
+URL=(
+"http://b.hatena.ne.jp/hotentry/it"
+"http://b.hatena.ne.jp/hotentry/general"
 )
 
 # Hatebu Html File.
