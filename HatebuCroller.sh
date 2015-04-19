@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/04/19
-# Ver   : 0.9
+# Ver   : 1.0
 ################################
 
 ##################
@@ -13,7 +13,7 @@
 function WebCroller()
 {
 	# Web Page Download.
-	wget -q ${URL} -O ${FILE}
+	wget -q ${URL[$count]} -O ${FILE}
 
 	# Web Page Analyze
 	HtmlAnalyze
@@ -29,7 +29,7 @@ function HtmlAnalyze()
 	mv ${FILE_TEMP_NEW} ${FILE_TEMP_OLD}
 
 	# Convert to News Title and URL
-	grep 'class="hb-entry-link-container"' hatebu-it.html \
+	grep 'class="hb-entry-link-container"' ${FILE} \
 	| awk -Fdata-entryrank=\" {'print $1}' \
 	| awk -Fclass=\"entry-link\" '{print $2 $1 }' \
 	| sed -E 's/[[:space:]]+title="//g' \
@@ -51,13 +51,22 @@ function HtmlAnalyze()
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Target URL.
-URL='http://b.hatena.ne.jp/hotentry/it'
+URL=(\
+ "http://b.hatena.ne.jp/hotentry/it" \
+ "http://b.hatena.ne.jp/hotentry/general" \
+)
 
-# Temp Files.
-FILE='/tmp/hatebu-it.html'
-FILE_TEMP_NEW='/tmp/hatebu.html.new'
-FILE_TEMP_OLD='/tmp/hatebu.html.old'
+# Hatebu Html File.
+FILE='/tmp/hatebu.html'
 
-# WebCroll.
-WebCroller
+# Analyze Function
+for (( count=0; count<${#URL[*]}; count++ ))
+do
+	# Set Temp File Name.
+	FILE_TEMP_NEW=`echo /tmp/hatebu-``echo ${URL[$count]} | awk -F\/ '{print $5}'``echo .html.new`
+	FILE_TEMP_OLD=`echo /tmp/hatebu-``echo ${URL[$count]} | awk -F\/ '{print $5}'``echo .html.old`
+
+	# WebCroll.
+	WebCroller
+done
 
