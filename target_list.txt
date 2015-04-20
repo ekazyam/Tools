@@ -1,2 +1,6 @@
-http://b.hatena.ne.jp/hotentry/it
+# for example.
+# url,keyword1,keyword2.....
+# http://b.hatena.ne.jp/hotentry/it,linux,program,tool
+#  
+http://b.hatena.ne.jp/hotentry/it,linux,program,tool
 http://b.hatena.ne.jp/hotentry/social

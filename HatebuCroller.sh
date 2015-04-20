@@ -1,20 +1,32 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/04/19
+# Data  : 2015/04/20
 # Ver   : 0.9beta
 ################################
 # Web Page Crolling.
 function WebCroller()
 {
 	# Web Page Download.
-	wget -q ${URL[$count]} -O ${FILE}
+	wget -q ${URL} -O ${FILE}
 
 	# Web Page Analyze
 	HtmlAnalyze
 
+	# Key Word Check.
+	test -n "${KEY_WORD}" && KeyWordCheck
+
 	# Diff Check
 	HtmlDiffCheck
+}
+
+# Key Word Check.
+function KeyWordCheck()
+{
+	# Create Temp File.
+	CMD_EXE="${KEY_WORD} ${FILE_TEMP_NEW}"
+	eval ${CMD_EXE} > ${FILE_TEMP_TMP}
+	cat ${FILE_TEMP_TMP} > ${FILE_TEMP_NEW}
 }
 
 # Hatebu News Page Analyze
@@ -23,7 +35,7 @@ function HtmlAnalyze()
 	# Html File Exist Check
 	test -e ${FILE_TEMP_NEW} && mv ${FILE_TEMP_NEW} ${FILE_TEMP_OLD}
 
-	# Convert to News Title and URL
+	# Convert to News Title and SITE_DATA
 	grep 'class="hb-entry-link-container"' ${FILE} \
 	| grep 'class="hb-entry-link-container"' hatebu.html \
 	| awk -Ftitle=\" '{print $2 $1}' \
@@ -62,25 +74,34 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 # Hatebu Html File.
 FILE='/tmp/hatebu.html'
 
-# Target URL List.
-TAEGET_LIST='target_list.txt'
+# Target SITE_DATA List.
+TARGET_LIST='target_list.txt'
 
-# Target URL.
-URL=(`cat ${TAEGET_LIST}`)
+# Target SITE_DATA.
+SITE_DATA=(`cat ${TARGET_LIST} | grep -v ^#`)
 
 # Bot Message
 MSG_BOT='[自動ツイート]'
 
 # Analyze Function
-for (( count=0; count<${#URL[*]}; count++ ))
+for (( count=0; count<${#SITE_DATA[*]}; count++ ))
 do
 	# Set Temp File Name.
-	echo ${URL[$count]}
-	FILE_TEMP_NEW=`echo /tmp/hatebu-``echo ${URL[$count]} | awk -F\/ '{print $5}'``echo .html.new`
-	FILE_TEMP_OLD=`echo /tmp/hatebu-``echo ${URL[$count]} | awk -F\/ '{print $5}'``echo .html.old`
-	FILE_TEMP_TMP=`echo /tmp/hatebu-``echo ${URL[$count]} | awk -F\/ '{print $5}'``echo .html.tmp`
+	FILE_TEMP_NEW=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | cut -d ',' -f 1 | awk -F\/ '{print $5}'``echo .html.new`
+	FILE_TEMP_OLD=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | cut -d ',' -f 1 | awk -F\/ '{print $5}'``echo .html.old`
+	FILE_TEMP_TMP=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | cut -d ',' -f 1 | awk -F\/ '{print $5}'``echo .html.tmp`
+
+	# Set Url.
+	URL=`echo ${SITE_DATA[$count]} | cut -d ',' -f 1`
+
+	# Set Key Word.
+	KEY_WORD=''
+	if [ ! `echo ${SITE_DATA[$count]} | sed -e 's/[^,]//g' | wc -c ` == 1 ]
+	then
+		KEY_WORD=`echo ${SITE_DATA[$count]} | cut -d , -f 2- | sed 's/^/grep\,/g' | sed 's/,/\ -ie\ /g'`
+	fi
 
 	# WebCroll.
-	WebCroller
+	WebCroller "${KEY_WORD}"
 done
 
