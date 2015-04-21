@@ -1,14 +1,14 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/04/20
+# Data  : 2015/04/21
 # Ver   : 0.9beta
 ################################
 # Web Page Crolling.
 function WebCroller()
 {
 	# Web Page Download.
-	wget -q ${URL} -O ${FILE}
+	wget -q ${URL} -O ${FILE_ORIGIN}
 
 	# Web Page Analyze
 	HtmlAnalyze
@@ -36,8 +36,8 @@ function HtmlAnalyze()
 	test -e ${FILE_TEMP_NEW} && mv ${FILE_TEMP_NEW} ${FILE_TEMP_OLD}
 
 	# Convert to News Title and SITE_DATA
-	grep 'class="hb-entry-link-container"' ${FILE} \
-	| grep 'class="hb-entry-link-container"' hatebu.html \
+	grep 'class="hb-entry-link-container"' ${FILE_ORIGIN} \
+	| grep 'class="hb-entry-link-container"' \
 	| awk -Ftitle=\" '{print $2 $1}' \
 	| sed -E 's/\"[[:space:]]data-entryrank=.+<a[[:space:]]href=\"/ /g' \
 	| sed -E 's/\"[[:space:]]class=\".*//g' \
@@ -59,8 +59,7 @@ function HtmlDiffCheck()
 function TweetHatebu()
 {
 	while read NEWS_MSG; do
-		echo ${MSG_BOT}${NEWS_MSG}
-		#yes | tw ${MSG_BOT}${NEWS_MSG}
+		yes | tw ${MSG_BOT}${NEWS_MSG}
 	done < ${FILE_TEMP_TMP}
 }
 
@@ -69,7 +68,6 @@ function TweetHatebu()
 ##################
 # Path Setting
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
 
 # Hatebu Html File.
 FILE='/tmp/hatebu.html'
@@ -87,6 +85,7 @@ MSG_BOT='[自動ツイート]'
 for (( count=0; count<${#SITE_DATA[*]}; count++ ))
 do
 	# Set Temp File Name.
+	FILE_ORIGIN=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | sed -e 's/http.*\///g' -e 's/,.*//g'``echo .html`
 	FILE_TEMP_NEW=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | cut -d ',' -f 1 | awk -F\/ '{print $5}'``echo .html.new`
 	FILE_TEMP_OLD=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | cut -d ',' -f 1 | awk -F\/ '{print $5}'``echo .html.old`
 	FILE_TEMP_TMP=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | cut -d ',' -f 1 | awk -F\/ '{print $5}'``echo .html.tmp`
@@ -103,5 +102,8 @@ do
 
 	# WebCroll.
 	WebCroller "${KEY_WORD}"
+
+	# Clean Up Temp File.
+	rm -f ${FILE_ORIGIN} ${FILE_TEMP_TMP}
 done
 
