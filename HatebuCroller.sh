@@ -73,7 +73,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 FILE='/tmp/hatebu.html'
 
 # Target SITE_DATA List.
-TARGET_LIST='target_list.txt'
+TARGET_LIST=`dirname $0`'/target_list.txt'
 
 # Target SITE_DATA.
 SITE_DATA=(`cat ${TARGET_LIST} | grep -v ^#`)
