@@ -1,6 +1,45 @@
-# for example.
-# url,keyword1,keyword2.....
-# http://b.hatena.ne.jp/hotentry/it,linux,program,tool
-#  
-http://b.hatena.ne.jp/hotentry/it,linux,program,tool
-http://b.hatena.ne.jp/hotentry/social
+# 
+# column1: 0 check off / 1 check on
+# column2: targeturl
+# column3: keyword
+# columnn: and more keyword.
+#
+
+#総合
+0,http://b.hatena.ne.jp/hotentry.rss
+0,http://b.hatena.ne.jp/entrylist.rss
+
+#世の中
+0,http://b.hatena.ne.jp/hotentry/social.rss
+0,http://b.hatena.ne.jp/entrylist/social.rss
+
+#政治と経済
+0,http://b.hatena.ne.jp/hotentry/economics.rss
+0,http://b.hatena.ne.jp/entrylist/economics.rss
+
+#暮らし
+0,http://b.hatena.ne.jp/hotentry/life.rss
+0,http://b.hatena.ne.jp/entrylist/life.rss
+
+#学び
+0,http://b.hatena.ne.jp/hotentry/knowledge.rss
+0,http://b.hatena.ne.jp/entrylist/knowledge.rss
+
+#テクノロジー
+0,http://b.hatena.ne.jp/hotentry/it.rss
+0,http://b.hatena.ne.jp/entrylist/it.rss
+
+#エンタメ
+0,http://b.hatena.ne.jp/hotentry/entertainment.rss
+0,http://b.hatena.ne.jp/entrylist/entertainment.rss
+
+#アニメとゲーム
+0,http://b.hatena.ne.jp/hotentry/game.rss
+0,http://b.hatena.ne.jp/entrylist/game.rss
+
+#おもしろ
+0,http://b.hatena.ne.jp/hotentry/fun.rss
+0,http://b.hatena.ne.jp/entrylist/fun.rss
+
+#動画
+0,http://b.hatena.ne.jp/video.rss

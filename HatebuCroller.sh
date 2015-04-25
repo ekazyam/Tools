@@ -1,7 +1,7 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/04/21
+# Data  : 2015/04/25
 # Ver   : 0.9beta
 ################################
 # Web Page Crolling.
@@ -36,11 +36,14 @@ function HtmlAnalyze()
 	test -e ${FILE_TEMP_NEW} && mv ${FILE_TEMP_NEW} ${FILE_TEMP_OLD}
 
 	# Convert to News Title and SITE_DATA
-	grep 'class="hb-entry-link-container"' ${FILE_ORIGIN} \
-	| grep 'class="hb-entry-link-container"' \
-	| awk -Ftitle=\" '{print $2 $1}' \
-	| sed -E 's/\"[[:space:]]data-entryrank=.+<a[[:space:]]href=\"/ /g' \
-	| sed -E 's/\"[[:space:]]class=\".*//g' \
+	grep -A 1 "<title>" ${FILE_ORIGIN} \
+	| grep -vE ^-- \
+	| sed -E 's/^[[:space:]]+<(title|link)>//g' \
+	| tr  '\n' ' ' \
+	| sed 's/<\/link>/\n/g' \
+	| sed -s 's/<\/title>//g' \
+	| grep -v ${HATEBU} \
+	| grep -Ev ^[[:space:]]+$ \
 	| sort \
 	> ${FILE_TEMP_NEW}
 }
@@ -52,7 +55,43 @@ function HtmlDiffCheck()
 	test -e ${FILE_TEMP_OLD} || return
 
 	# Diff Check
-	comm ${FILE_TEMP_NEW} ${FILE_TEMP_OLD} | grep -Ev ^[[:space:]]+ > ${FILE_TEMP_TMP} && TweetHatebu
+	diff ${FILE_TEMP_NEW} ${FILE_TEMP_OLD} | grep -E "^>" > ${FILE_TEMP_TMP} && TweetHatebu
+}
+
+# FooterSetting for TempFileName.
+function SetFooter()
+{
+	FOOTER="normal"
+	echo ${SITE_DATA[$count]} | grep -E "http.+hotentry\/.+\.rss" > /dev/null 2>&1 && FOOTER="hot"
+	echo ${SITE_DATA[$count]} | grep -E "http.+entrylist\/.+\.rss" > /dev/null 2>&1 && FOOTER="ent"
+}
+
+# TmpFileName Setting.
+function SetTmpFileName()
+{
+	FILE_ORIGIN=`echo ${TMP_DIR}${SITE_DATA[$count]} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-org`
+	FILE_TEMP_NEW=`echo ${TMP_DIR}${SITE_DATA[$count]} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-new`
+	FILE_TEMP_OLD=`echo ${TMP_DIR}${SITE_DATA[$count]} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-old`
+	FILE_TEMP_TMP=`echo ${TMP_DIR}${SITE_DATA[$count]} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-tmp`
+}
+
+# Url Setting.
+function SetUrl()
+{
+	URL=`echo ${SITE_DATA[$count]} | cut -d ',' -f 2`
+}
+
+# KeyWord Setting.
+function SetKeyWord()
+{
+	# Set Key Word.
+	KEY_WORD=''
+
+	# Check Keyword Exist.
+	if [ `echo ${SITE_DATA[$count]} | sed -e 's/[^,]//g' | wc -c ` != 2 ]
+	then
+		KEY_WORD=`echo ${SITE_DATA[$count]} | cut -d , -f 3- | sed 's/^/grep\,/g' | sed 's/,/\ -ie\ /g'`
+	fi
 }
 
 # Twitter
@@ -75,35 +114,47 @@ FILE='/tmp/hatebu.html'
 # Target SITE_DATA List.
 TARGET_LIST=`dirname $0`'/target_list.txt'
 
+# Hatebu URL
+HATEBU="http://b.hatena.ne.jp/hotentry/"
+
 # Target SITE_DATA.
 SITE_DATA=(`cat ${TARGET_LIST} | grep -v ^#`)
 
 # Bot Message
 MSG_BOT='[自動ツイート]'
 
+# Check URL On
+CHECK_URL="1"
+
+# Key Word.
+KEY_WORD=''
+
+# Tmp File Directory
+TMP_DIR="/tmp/hatebu-"
+
 # Analyze Function
 for (( count=0; count<${#SITE_DATA[*]}; count++ ))
 do
-	# Set Temp File Name.
-	FILE_ORIGIN=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | sed -e 's/http.*\///g' -e 's/,.*//g'``echo .html`
-	FILE_TEMP_NEW=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | cut -d ',' -f 1 | awk -F\/ '{print $5}'``echo .html.new`
-	FILE_TEMP_OLD=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | cut -d ',' -f 1 | awk -F\/ '{print $5}'``echo .html.old`
-	FILE_TEMP_TMP=`echo /tmp/hatebu-``echo ${SITE_DATA[$count]} | cut -d ',' -f 1 | awk -F\/ '{print $5}'``echo .html.tmp`
-
-	# Set Url.
-	URL=`echo ${SITE_DATA[$count]} | cut -d ',' -f 1`
-
-	# Set Key Word.
-	KEY_WORD=''
-	if [ ! `echo ${SITE_DATA[$count]} | sed -e 's/[^,]//g' | wc -c ` == 1 ]
+	# Target URL Bit Check
+	if [ `echo ${SITE_DATA[$count]} | cut -d ',' -f 1` == ${CHECK_URL} ]
 	then
-		KEY_WORD=`echo ${SITE_DATA[$count]} | cut -d , -f 2- | sed 's/^/grep\,/g' | sed 's/,/\ -ie\ /g'`
+		# Set Footer.
+		SetFooter
+ 
+		# Set Temp File Name.
+		SetTmpFileName
+		
+		# Set Url.
+		SetUrl
+
+		# Set Key Word.
+		SetKeyWord
+
+		# WebCroll.
+		WebCroller "${KEY_WORD}"
+
+		# Clean Up Temp File.
+		rm -f ${FILE_ORIGIN} ${FILE_TEMP_TMP}
 	fi
-
-	# WebCroll.
-	WebCroller "${KEY_WORD}"
-
-	# Clean Up Temp File.
-	rm -f ${FILE_ORIGIN} ${FILE_TEMP_TMP}
 done
 
