@@ -55,7 +55,7 @@ function HtmlDiffCheck()
 	test -e ${FILE_TEMP_OLD} || return
 
 	# Diff Check
-	diff ${FILE_TEMP_NEW} ${FILE_TEMP_OLD} | grep -E "^>" > ${FILE_TEMP_TMP} && TweetHatebu
+	diff ${FILE_TEMP_NEW} ${FILE_TEMP_OLD} | grep -E "^>" | sed -E 's/^>[[:space:]]+//g' > ${FILE_TEMP_TMP} && TweetHatebu
 }
 
 # FooterSetting for TempFileName.
