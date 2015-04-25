@@ -62,23 +62,23 @@ function HtmlDiffCheck()
 function SetFooter()
 {
 	FOOTER="normal"
-	echo ${SITE_DATA[$count]} | grep -E "http.+hotentry\/.+\.rss" > /dev/null 2>&1 && FOOTER="hot"
-	echo ${SITE_DATA[$count]} | grep -E "http.+entrylist\/.+\.rss" > /dev/null 2>&1 && FOOTER="ent"
+	echo ${SITE} | grep -E "http.+hotentry\/.+\.rss" > /dev/null 2>&1 && FOOTER="hot"
+	echo ${SITE} | grep -E "http.+entrylist\/.+\.rss" > /dev/null 2>&1 && FOOTER="ent"
 }
 
 # TmpFileName Setting.
 function SetTmpFileName()
 {
-	FILE_ORIGIN=`echo ${TMP_DIR}${SITE_DATA[$count]} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-org`
-	FILE_TEMP_NEW=`echo ${TMP_DIR}${SITE_DATA[$count]} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-new`
-	FILE_TEMP_OLD=`echo ${TMP_DIR}${SITE_DATA[$count]} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-old`
-	FILE_TEMP_TMP=`echo ${TMP_DIR}${SITE_DATA[$count]} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-tmp`
+	FILE_ORIGIN=`echo ${TMP_DIR}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-org`
+	FILE_TEMP_NEW=`echo ${TMP_DIR}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-new`
+	FILE_TEMP_OLD=`echo ${TMP_DIR}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-old`
+	FILE_TEMP_TMP=`echo ${TMP_DIR}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-tmp`
 }
 
 # Url Setting.
 function SetUrl()
 {
-	URL=`echo ${SITE_DATA[$count]} | cut -d ',' -f 2`
+	URL=`echo ${SITE} | cut -d ',' -f 2`
 }
 
 # KeyWord Setting.
@@ -88,9 +88,9 @@ function SetKeyWord()
 	KEY_WORD=''
 
 	# Check Keyword Exist.
-	if [ `echo ${SITE_DATA[$count]} | sed -e 's/[^,]//g' | wc -c ` != 2 ]
+	if [ `echo ${SITE} | sed -e 's/[^,]//g' | wc -c ` != 2 ]
 	then
-		KEY_WORD=`echo ${SITE_DATA[$count]} | cut -d , -f 3- | sed 's/^/grep\,/g' | sed 's/,/\ -ie\ /g'`
+		KEY_WORD=`echo ${SITE} | cut -d , -f 3- | sed 's/^/grep\,/g' | sed 's/,/\ -ie\ /g'`
 	fi
 }
 
@@ -99,7 +99,41 @@ function TweetHatebu()
 {
 	while read NEWS_MSG; do
 		yes | tw ${MSG_BOT}${NEWS_MSG}
+		#echo ${MSG_BOT}${NEWS_MSG}
 	done < ${FILE_TEMP_TMP}
+}
+
+# Check Function
+function Analyze()
+{
+	# Set Site Data.
+	SITE=${1}
+
+	# Multi Process View Debug
+	#echo ${SITE}
+
+	# Target URL Bit Check
+	if [ `echo ${SITE} | cut -d ',' -f 1` == ${CHECK_URL} ]
+	then
+		# Set Footer.
+		SetFooter
+ 
+		# Set Temp File Name.
+		SetTmpFileName
+		
+		# Set Url.
+		SetUrl
+
+		# Set Key Word.
+		SetKeyWord
+
+		# WebCroll.
+		WebCroller "${KEY_WORD}"
+
+		# Clean Up Temp File.
+		rm -f ${FILE_ORIGIN} ${FILE_TEMP_TMP}
+	fi
+
 }
 
 ##################
@@ -107,9 +141,6 @@ function TweetHatebu()
 ##################
 # Path Setting
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
-# Hatebu Html File.
-FILE='/tmp/hatebu.html'
 
 # Target SITE_DATA List.
 TARGET_LIST=`dirname $0`'/target_list.txt'
@@ -132,29 +163,17 @@ KEY_WORD=''
 # Tmp File Directory
 TMP_DIR="/tmp/hatebu-"
 
-# Analyze Function
-for (( count=0; count<${#SITE_DATA[*]}; count++ ))
-do
-	# Target URL Bit Check
-	if [ `echo ${SITE_DATA[$count]} | cut -d ',' -f 1` == ${CHECK_URL} ]
-	then
-		# Set Footer.
-		SetFooter
- 
-		# Set Temp File Name.
-		SetTmpFileName
-		
-		# Set Url.
-		SetUrl
+# Max Process at This Script.
+# 0	: Unlimited.
+# 1 - n : 
+MAX_P=0
 
-		# Set Key Word.
-		SetKeyWord
+# Function Export.
+export -f Analyze HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetKeyWord SetTmpFileName SetUrl TweetHatebu WebCroller
 
-		# WebCroll.
-		WebCroller "${KEY_WORD}"
+# Data Export.
+export CHECK_URL HATEBU KEY_WORD MSG_BOT PATH TMP_DIR
 
-		# Clean Up Temp File.
-		rm -f ${FILE_ORIGIN} ${FILE_TEMP_TMP}
-	fi
-done
+# Analyze Function for Multi Process.
+echo ${SITE_DATA[@]} | sed 's/ /\n/g' | xargs -P${MAX_P} -n1 -I % bash -c "Analyze %"
 
