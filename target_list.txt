@@ -4,6 +4,12 @@
 # column3: keyword
 # columnn: and more keyword.
 #
+# example:
+# check  : ON
+# target : http://b.hatena.ne.jp/hotentry/it.rss
+# keyword: android,iphone,windows,linux,mac
+# 1,http://b.hatena.ne.jp/hotentry/it.rss,android,iphone,windows,linux,mac
+#
 
 #総合
 0,http://b.hatena.ne.jp/hotentry.rss
