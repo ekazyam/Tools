@@ -113,6 +113,7 @@ function TweetHatebu()
 {
 	while read NEWS_MSG; do
 		yes | tw ${MSG_BOT}${NEWS_MSG}
+		sleep ${WAIT_TIME}
 	done < ${FILE_TEMP_TMP}
 }
 
@@ -176,6 +177,9 @@ KEY_WORD=''
 # Tmp File Directory
 TMP_DIR="/tmp/hatebu-"
 
+# Tweet Sleep Time at Second.
+WAIT_TIME=10
+
 # Max Process at This Script.
 # 0	: Unlimited.
 # 1 - n : 
@@ -185,7 +189,7 @@ MAX_P=0
 export -f Analyze HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetKeyWord SetTmpFileName SetUrl TweetHatebu WebCroller
 
 # Data Export.
-export CHECK_URL HATEBU KEY_WORD MSG_BOT PATH TMP_DIR
+export CHECK_URL HATEBU KEY_WORD MSG_BOT PATH TMP_DIR WAIT_TIME
 
 # Analyze Function for Multi Process.
 echo ${SITE_DATA[@]} | sed 's/ /\n/g' | xargs -P${MAX_P} -n1 -I % bash -c "Analyze %"
