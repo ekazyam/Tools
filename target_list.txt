@@ -34,7 +34,7 @@
 
 #テクノロジー
 0,http://b.hatena.ne.jp/hotentry/it.rss
-0,http://b.hatena.ne.jp/entrylist/it.rss,linux,windows
+0,http://b.hatena.ne.jp/entrylist/it.rss
 
 #エンタメ
 0,http://b.hatena.ne.jp/hotentry/entertainment.rss
