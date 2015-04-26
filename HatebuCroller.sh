@@ -1,7 +1,7 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/04/25
+# Data  : 2015/04/27
 # Ver   : 0.9beta
 ################################
 # Web Page Crolling.
@@ -24,7 +24,8 @@ function WebCroller()
 function KeyWordCheck()
 {
 	# Create Temp File.
-	CMD_EXE="${KEY_WORD} ${FILE_TEMP_NEW}"
+	echo ${KEY_WORD} | grep '|' > /dev/null 2>&1 || CMD_EXE="${KEY_WORD} ${FILE_TEMP_NEW}"
+	echo ${KEY_WORD} | grep '|' > /dev/null 2>&1 && CMD_EXE=`echo ${KEY_WORD/\ \|\ /\ ${FILE_TEMP_NEW}\ \|\ }`
 	eval ${CMD_EXE} > ${FILE_TEMP_TMP}
 	cat ${FILE_TEMP_TMP} > ${FILE_TEMP_NEW}
 }
@@ -44,6 +45,7 @@ function HtmlAnalyze()
 	| sed -s 's/<\/title>//g' \
 	| grep -v ${HATEBU} \
 	| grep -Ev ^[[:space:]]+$ \
+	| sed -E 's/^[[:space:]]+//' \
 	| sort \
 	> ${FILE_TEMP_NEW}
 }
@@ -90,7 +92,19 @@ function SetKeyWord()
 	# Check Keyword Exist.
 	if [ `echo ${SITE} | sed -e 's/[^,]//g' | wc -c ` != 2 ]
 	then
-		KEY_WORD=`echo ${SITE} | cut -d , -f 3- | sed 's/^/grep\,/g' | sed 's/,/\ -ie\ /g'`
+		# Valid Data Exist.
+		KEY_WORD=`echo ${SITE} \
+		| cut -d , -f 3- \
+		| sed -e 's/^/,/' \
+		-e 's/,/'\'','\''/g' \
+		-e 's/$/'\''/' \
+		-e 's/,'\''#/\ egrep\ -v\ -ie\ '\''/' \
+		-e 's/'\''\ \|//' \
+		-e 's/\ egrep/\ \|\ egrep/' \
+		-e 's/,'\''#/\ -ie\ '\''/g' \
+		-e 's/^'\'',/grep\ -ie\ /' \
+		-e 's/,/\ -ie\ /g' \
+		`
 	fi
 }
 
@@ -99,7 +113,6 @@ function TweetHatebu()
 {
 	while read NEWS_MSG; do
 		yes | tw ${MSG_BOT}${NEWS_MSG}
-		#echo ${MSG_BOT}${NEWS_MSG}
 	done < ${FILE_TEMP_TMP}
 }
 

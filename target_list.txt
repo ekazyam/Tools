@@ -4,11 +4,12 @@
 # column3: keyword
 # columnn: and more keyword.
 #
-# example:
-# check  : ON
-# target : http://b.hatena.ne.jp/hotentry/it.rss
-# keyword: android,iphone,windows,linux,mac
-# 1,http://b.hatena.ne.jp/hotentry/it.rss,android,iphone,windows,linux,mac
+# example
+# check		:ON
+# target	: http://b.hatena.ne.jp/hotentry/it.rss
+# keyword	: android,iphone,windows,linux,mac
+# valid keyword	: #game
+# 1,http://b.hatena.ne.jp/hotentry/it.rss,android,iphone,windows,linux,mac,#adult
 #
 
 #総合
@@ -33,7 +34,7 @@
 
 #テクノロジー
 0,http://b.hatena.ne.jp/hotentry/it.rss
-0,http://b.hatena.ne.jp/entrylist/it.rss
+0,http://b.hatena.ne.jp/entrylist/it.rss,linux,windows
 
 #エンタメ
 0,http://b.hatena.ne.jp/hotentry/entertainment.rss
