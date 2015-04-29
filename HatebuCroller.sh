@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/04/29
-# Ver   : 1.0
+# Data  : 2015/04/28
+# Ver   : 0.9beta
 ################################
 # Web Page Crolling.
 function WebCroller()
@@ -86,31 +86,35 @@ function SetUrl()
 # KeyWord Setting.
 function SetKeyWord()
 {
-	# Set Key Word.
-	KEY_WORD=''
-
 	# Check Keyword Exist.
 	if [ `echo ${SITE} | sed -e 's/[^,]//g' | wc -c ` != 2 ]
 	then
-		# Valid Data Exist.
-		KEY_WORD=`echo ${SITE} \
-		| cut -d , -f 3- \
-		| sed -e 's/,/\n/g' \
-		| sort -r \
-		| sed -e 's/$/,/g' \
-		| tr -d '\n' \
-		| sed -e 's/,$//' \
-		-e 's/^/,/' \
-		-e 's/,/'\'','\''/g' \
-		-e 's/$/'\''/' \
-		-e 's/,'\''#/\ egrep\ -v\ -ie\ '\''/' \
-		-e 's/'\''\ \|//' \
-		-e 's/\ egrep/\ \|\ egrep/' \
-		-e 's/,'\''#/\ -ie\ '\''/g' \
-		-e 's/^'\'',/grep\ -ie\ /' \
-		-e 's/,/\ -ie\ /g' \
-		`
+		# Grep and Egrep Command Setting.
+		CreateKeyWord
 	fi
+}
+
+# KeyWord Command Create.
+function CreateKeyWord()
+{
+	# Valid Data Exist.
+	KEY_WORD=`echo ${SITE} \
+	| cut -d , -f 3- \
+	| sed -e 's/,/\n/g' \
+	| sort -r \
+	| sed -e 's/$/,/g' \
+	| tr -d '\n' \
+	| sed -e 's/,$//' \
+	-e 's/^/,/' \
+	-e 's/,/'\'','\''/g' \
+	-e 's/$/'\''/' \
+	-e 's/,'\''#/\ egrep\ -v\ -ie\ '\''/' \
+	-e 's/'\''\ \|//' \
+	-e 's/\ egrep/\ \|\ egrep/' \
+	-e 's/,'\''#/\ -ie\ '\''/g' \
+	-e 's/^'\'',/grep\ -ie\ /' \
+	-e 's/,/\ -ie\ /g' \
+	`
 }
 
 # Twitter
@@ -187,7 +191,7 @@ TMP_DIR="/tmp/hatebu-"
 MAX_P=0
 
 # Function Export.
-export -f Analyze HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetKeyWord SetTmpFileName SetUrl TweetHatebu WebCroller
+export -f Analyze CreateKeyWord HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetKeyWord SetTmpFileName SetUrl TweetHatebu WebCroller
 
 # Data Export.
 export CHECK_URL HATEBU KEY_WORD MSG_BOT PATH TMP_DIR
