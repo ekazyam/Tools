@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2014/07/04
-# Ver   : 1.5.beta
+# Data  : 2015/04/29
+# Ver   : 1.6
 ################################
 
 ##################
@@ -11,8 +11,8 @@
 function sendTwitter()
 {
 	# Tweet!
-	#echo ${MSG_BOT}${MSG_TWEET}
-	yes | tw ${MSG_BOT}${MSG_TWEET}
+	test -z ${TW_USER} && yes | tw ${MSG_BOT}${MSG_TWEET}
+	test -z ${TW_USER} || yes | tw --user=${TW_USER} ${MSG_BOT}${MSG_TWEET}
 }
 
 ##################
@@ -174,6 +174,10 @@ URL='http://weather.excite.co.jp/spot/zp-1006801/'
 FILE='/tmp/spot-wether.html'
 FILE_TEMP='/tmp/spot-wether.html.temp'
 FILE_RESULT='/tmp/spot-wether.html.result'
+
+# Twitter Acount Name.
+# Use Default User.
+TW_USER=''
 
 # Wget Retry Counter
 RETRY='3'
