@@ -1,16 +1,21 @@
+################################################################################# 
 # 
 # column1: 0 check off / 1 check on
 # column2: targeturl
 # column3: keyword
 # columnn: and more keyword.
 #
-# example
-# check		:ON
-# target	: http://b.hatena.ne.jp/hotentry/it.rss
-# keyword	: android,iphone,windows,linux,mac
+# Check Blog	:ON
+# Target URL	: http://b.hatena.ne.jp/hotentry/it.rss
+# Check Keyword	: android,iphone,windows,linux,mac
 # valid keyword	: #game
-# 1,http://b.hatena.ne.jp/hotentry/it.rss,android,iphone,windows,linux,mac,#adult
 #
+# Example Keyword order
+# 1,http://b.hatena.ne.jp/hotentry/it.rss,android,iphone,windows,linux,mac,#game
+# Example Allow Random order.
+# 1,http://b.hatena.ne.jp/hotentry/it.rss,#android,iphone,#windows,linux,#mac
+#
+################################################################################# 
 
 #総合
 0,http://b.hatena.ne.jp/hotentry.rss
@@ -45,8 +50,8 @@
 0,http://b.hatena.ne.jp/entrylist/game.rss
 
 #おもしろ
-0,http://b.hatena.ne.jp/hotentry/fun.rss
+1,http://b.hatena.ne.jp/hotentry/fun.rss
 0,http://b.hatena.ne.jp/entrylist/fun.rss
 
 #動画
-0,http://b.hatena.ne.jp/video.rss
+1,http://b.hatena.ne.jp/video.rss

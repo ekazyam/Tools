@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/04/27
-# Ver   : 0.9beta
+# Data  : 2015/04/29
+# Ver   : 1.0
 ################################
 # Web Page Crolling.
 function WebCroller()
@@ -95,7 +95,12 @@ function SetKeyWord()
 		# Valid Data Exist.
 		KEY_WORD=`echo ${SITE} \
 		| cut -d , -f 3- \
-		| sed -e 's/^/,/' \
+		| sed -e 's/,/\n/g' \
+		| sort -r \
+		| sed -e 's/$/,/g' \
+		| tr -d '\n' \
+		| sed -e 's/,$//' \
+		-e 's/^/,/' \
 		-e 's/,/'\'','\''/g' \
 		-e 's/$/'\''/' \
 		-e 's/,'\''#/\ egrep\ -v\ -ie\ '\''/' \
@@ -112,7 +117,7 @@ function SetKeyWord()
 function TweetHatebu()
 {
 	while read NEWS_MSG; do
-		yes | tw ${MSG_BOT}${NEWS_MSG}
+		yes | tw -silent ${MSG_BOT}${NEWS_MSG}
 	done < ${FILE_TEMP_TMP}
 }
 
