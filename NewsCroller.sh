@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/04/28
-# Ver   : 0.9beta
+# Data  : 2015/05/02
+# Ver   : 1.0
 ################################
 # Web Page Crolling.
 function WebCroller()
@@ -43,9 +43,10 @@ function HtmlAnalyze()
 	| tr  '\n' ' ' \
 	| sed 's/<\/link>/\n/g' \
 	| sed -s 's/<\/title>//g' \
-	| grep -v ${HATEBU} \
+	| grep -Ev "${VALID_DATA}" \
 	| grep -Ev ^[[:space:]]+$ \
 	| sed -E 's/^[[:space:]]+//' \
+	| grep -E 'http[s]{0,1}' \
 	| sort \
 	> ${FILE_TEMP_NEW}
 }
@@ -57,7 +58,7 @@ function HtmlDiffCheck()
 	test -e ${FILE_TEMP_OLD} || return
 
 	# Diff Check
-	comm -23 ${FILE_TEMP_NEW} ${FILE_TEMP_OLD} > ${FILE_TEMP_TMP} && TweetHatebu
+	comm -23 ${FILE_TEMP_NEW} ${FILE_TEMP_OLD} > ${FILE_TEMP_TMP} && TweetNews
 }
 
 # FooterSetting for TempFileName.
@@ -86,39 +87,35 @@ function SetUrl()
 # KeyWord Setting.
 function SetKeyWord()
 {
+	# Set Key Word.
+	KEY_WORD=''
+
 	# Check Keyword Exist.
 	if [ `echo ${SITE} | sed -e 's/[^,]//g' | wc -c ` != 2 ]
 	then
-		# Grep and Egrep Command Setting.
-		CreateKeyWord
+		# Valid Data Exist.
+		KEY_WORD=`echo ${SITE} \
+		| cut -d , -f 3- \
+		| sed -e 's/,/\n/g' \
+		| sort -r \
+		| sed -e 's/$/,/g' \
+		| tr -d '\n' \
+		| sed -e 's/,$//' \
+		-e 's/^/,/' \
+		-e 's/,/'\'','\''/g' \
+		-e 's/$/'\''/' \
+		-e 's/,'\''#/\ egrep\ -v\ -ie\ '\''/' \
+		-e 's/'\''\ \|//' \
+		-e 's/\ egrep/\ \|\ egrep/' \
+		-e 's/,'\''#/\ -ie\ '\''/g' \
+		-e 's/^'\'',/grep\ -ie\ /' \
+		-e 's/,/\ -ie\ /g' \
+		`
 	fi
 }
 
-# KeyWord Command Create.
-function CreateKeyWord()
-{
-	# Valid Data Exist.
-	KEY_WORD=`echo ${SITE} \
-	| cut -d , -f 3- \
-	| sed -e 's/,/\n/g' \
-	| sort -r \
-	| sed -e 's/$/,/g' \
-	| tr -d '\n' \
-	| sed -e 's/,$//' \
-	-e 's/^/,/' \
-	-e 's/,/'\'','\''/g' \
-	-e 's/$/'\''/' \
-	-e 's/,'\''#/\ egrep\ -v\ -ie\ '\''/' \
-	-e 's/'\''\ \|//' \
-	-e 's/\ egrep/\ \|\ egrep/' \
-	-e 's/,'\''#/\ -ie\ '\''/g' \
-	-e 's/^'\'',/grep\ -ie\ /' \
-	-e 's/,/\ -ie\ /g' \
-	`
-}
-
 # Twitter
-function TweetHatebu()
+function TweetNews()
 {
 	while read NEWS_MSG; do
 		yes | tw -silent ${MSG_BOT}${NEWS_MSG}
@@ -131,8 +128,8 @@ function Analyze()
 	# Set Site Data.
 	SITE=${1}
 
-	# Multi Process View Debug
-	#echo ${SITE}
+	# Valid Data.
+	VALID_DATA=(`grep -E '^#! ' ${TARGET_LIST} | awk -F" " '{ print $2 }'`)
 
 	# Target URL Bit Check
 	if [ `echo ${SITE} | cut -d ',' -f 1` == ${CHECK_URL} ]
@@ -153,7 +150,7 @@ function Analyze()
 		WebCroller "${KEY_WORD}"
 
 		# Clean Up Temp File.
-		rm -f ${FILE_ORIGIN} ${FILE_TEMP_TMP}
+		#rm -f ${FILE_ORIGIN} ${FILE_TEMP_TMP}
 	fi
 
 }
@@ -165,10 +162,9 @@ function Analyze()
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Target SITE_DATA List.
-TARGET_LIST=`dirname $0`'/target_list.txt'
-
-# Hatebu URL
-HATEBU="http://b.hatena.ne.jp/hotentry/"
+# Hatebu or Slado.
+TARGET_LIST=`dirname $0`'/target_list_hatebu.txt'
+#TARGET_LIST=`dirname $0`'/target_list_slado.txt'
 
 # Target SITE_DATA.
 SITE_DATA=(`cat ${TARGET_LIST} | grep -v ^#`)
@@ -182,8 +178,11 @@ CHECK_URL="1"
 # Key Word.
 KEY_WORD=''
 
+# Twitter Account Name.
+TW_USER=''
+
 # Tmp File Directory
-TMP_DIR="/tmp/hatebu-"
+TMP_DIR="/tmp/"
 
 # Max Process at This Script.
 # 0	: Unlimited.
@@ -191,10 +190,10 @@ TMP_DIR="/tmp/hatebu-"
 MAX_P=0
 
 # Function Export.
-export -f Analyze CreateKeyWord HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetKeyWord SetTmpFileName SetUrl TweetHatebu WebCroller
+export -f Analyze HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetKeyWord SetTmpFileName SetUrl TweetNews WebCroller
 
 # Data Export.
-export CHECK_URL HATEBU KEY_WORD MSG_BOT PATH TMP_DIR
+export CHECK_URL VALID_DATA KEY_WORD MSG_BOT PATH TMP_DIR TW_USER TARGET_LIST
 
 # Analyze Function for Multi Process.
 echo ${SITE_DATA[@]} | sed 's/ /\n/g' | xargs -P${MAX_P} -n1 -I % bash -c "Analyze %"

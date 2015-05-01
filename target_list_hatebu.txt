@@ -1,0 +1,59 @@
+################################################################################# 
+# 
+# column1: 0 check off / 1 check on
+# column2: targeturl
+# column3: keyword
+# columnn: and more keyword.
+#
+# Check Blog	:ON
+# Target URL	: http://b.hatena.ne.jp/hotentry/it.rss
+# Check Keyword	: android,iphone,windows,linux,mac
+# valid keyword	: #game
+#
+# Example Keyword order
+# 1,http://b.hatena.ne.jp/hotentry/it.rss,android,iphone,windows,linux,mac,#game
+# Example Allow Random order.
+# 1,http://b.hatena.ne.jp/hotentry/it.rss,#android,iphone,#windows,linux,#mac
+#
+################################################################################# 
+#内部利用データ
+#!,http://b.hatena.ne.jp/hotentry/,hatebu-
+
+#総合
+0,http://b.hatena.ne.jp/hotentry.rss
+0,http://b.hatena.ne.jp/entrylist.rss
+
+#世の中
+0,http://b.hatena.ne.jp/hotentry/social.rss
+0,http://b.hatena.ne.jp/entrylist/social.rss
+
+#政治と経済
+0,http://b.hatena.ne.jp/hotentry/economics.rss
+0,http://b.hatena.ne.jp/entrylist/economics.rss
+
+#暮らし
+0,http://b.hatena.ne.jp/hotentry/life.rss
+0,http://b.hatena.ne.jp/entrylist/life.rss
+
+#学び
+0,http://b.hatena.ne.jp/hotentry/knowledge.rss
+0,http://b.hatena.ne.jp/entrylist/knowledge.rss
+
+#テクノロジー
+0,http://b.hatena.ne.jp/hotentry/it.rss
+0,http://b.hatena.ne.jp/entrylist/it.rss
+
+#エンタメ
+0,http://b.hatena.ne.jp/hotentry/entertainment.rss
+0,http://b.hatena.ne.jp/entrylist/entertainment.rss
+
+#アニメとゲーム
+0,http://b.hatena.ne.jp/hotentry/game.rss
+0,http://b.hatena.ne.jp/entrylist/game.rss
+
+#おもしろ
+0,http://b.hatena.ne.jp/hotentry/fun.rss
+0,http://b.hatena.ne.jp/entrylist/fun.rss
+
+#動画
+0,http://b.hatena.ne.jp/video.rss
