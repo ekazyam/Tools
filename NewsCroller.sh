@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/05/02
-# Ver   : 1.0
+# Ver   : 1.1
 ################################
 # Web Page Crolling.
 function WebCroller()
@@ -170,10 +170,14 @@ function Analyze()
 # Path Setting
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# Target SITE_DATA List.
-# Hatebu or Slado.
-TARGET_LIST=`dirname $0`'/target_list_hatebu.txt'
-#TARGET_LIST=`dirname $0`'/target_list_slado.txt'
+# TargetFile Check.
+test $# -eq 1 || exit
+
+# Check TargetFile Exist.
+test -e ${1} || exit
+
+# Set Target Site List.
+TARGET_LIST=${1}
 
 # Target SITE_DATA.
 SITE_DATA=(`cat ${TARGET_LIST} | grep -v ^#`)
