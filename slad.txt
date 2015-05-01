@@ -1,1 +1,0 @@
-grep -E '<p class="title"><a href="http://' askslashdot.rss | sed -E 's/^[[:space:]]+<p[[:space:]]{1}class=.+href=\"//g' | sed 's/">/\|/'  | sed -E 's/<\/a><\/p>$//g' | awk -F"|" '{ print $2 $1 }'
