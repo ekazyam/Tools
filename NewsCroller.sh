@@ -69,13 +69,19 @@ function SetFooter()
 	echo ${SITE} | grep -E "http.+entrylist\/.+\.rss" > /dev/null 2>&1 && FOOTER="ent"
 }
 
+# HeaderSetting for TempFileName.
+function SetHeader()
+{
+	HEADER=(`grep -E '^#!,' ${TARGET_LIST} | awk -F"," '{ print $3 }'`)
+}
+
 # TmpFileName Setting.
 function SetTmpFileName()
 {
-	FILE_ORIGIN=`echo ${TMP_DIR}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-org`
-	FILE_TEMP_NEW=`echo ${TMP_DIR}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-new`
-	FILE_TEMP_OLD=`echo ${TMP_DIR}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-old`
-	FILE_TEMP_TMP=`echo ${TMP_DIR}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-tmp`
+	FILE_ORIGIN=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-org`
+	FILE_TEMP_NEW=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-new`
+	FILE_TEMP_OLD=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-old`
+	FILE_TEMP_TMP=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-tmp`
 }
 
 # Url Setting.
@@ -129,11 +135,14 @@ function Analyze()
 	SITE=${1}
 
 	# Valid Data.
-	VALID_DATA=(`grep -E '^#! ' ${TARGET_LIST} | awk -F" " '{ print $2 }'`)
+	VALID_DATA=(`grep -E '^#!,' ${TARGET_LIST} | awk -F"," '{ print $2 }'`)
 
 	# Target URL Bit Check
 	if [ `echo ${SITE} | cut -d ',' -f 1` == ${CHECK_URL} ]
 	then
+		# Set Header.
+		SetHeader
+
 		# Set Footer.
 		SetFooter
  
@@ -190,7 +199,7 @@ TMP_DIR="/tmp/"
 MAX_P=0
 
 # Function Export.
-export -f Analyze HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetKeyWord SetTmpFileName SetUrl TweetNews WebCroller
+export -f Analyze HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetHeader SetKeyWord SetTmpFileName SetUrl TweetNews WebCroller
 
 # Data Export.
 export CHECK_URL VALID_DATA KEY_WORD MSG_BOT PATH TMP_DIR TW_USER TARGET_LIST
