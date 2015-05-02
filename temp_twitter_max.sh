@@ -1,14 +1,18 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2014/06/20
-# Ver   : 1.2
+# Data  : 2015/05/04
+# Ver   : 1.3
 ################################
 # Common Setting
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games
 DAY=`date +"%m月%d日" --date "1 day ago"`
 MAX_TEMP=null
 FILE='/tmp/1_temp.html'
+
+# Twitter Acount Name.
+# Use Default User.
+TW_USER=''
 
 # Temp Border Setting
 FUYU_TEMP=18.0
@@ -66,4 +70,7 @@ fi
 
 # tweet
 #echo ${MSG_BOT}${DAY}" の最高気温は" $MAX_TEMP "度でした。${MSG}" && exit
-yes | tw ${MSG_BOT}${DAY}" の最高気温は" $MAX_TEMP "度でした。${MSG}"
+
+test -z ${TW_USER} || yes | tw --user=${TW_USER} ${MSG_BOT}${DAY}" の最高気温は" $MAX_TEMP "度でした。${MSG}"
+test -z ${TW_USER} && yes | tw ${MSG_BOT}${DAY}" の最高気温は" $MAX_TEMP "度でした。${MSG}"
+
