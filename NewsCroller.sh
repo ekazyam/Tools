@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/05/02
-# Ver   : 1.1
+# Data  : 2015/05/03
+# Ver   : 1.2
 ################################
 # Web Page Crolling.
 function WebCroller()
@@ -128,6 +128,14 @@ function TweetNews()
 	done < ${FILE_TEMP_TMP}
 }
 
+# Usage
+function Usage()
+{
+	echo "e.g."
+	echo "croll NewsCroller.sh target_list_hatebu.txt"
+	exit
+}
+
 # Check Function
 function Analyze()
 {
@@ -171,10 +179,10 @@ function Analyze()
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # TargetFile Check.
-test $# -eq 1 || exit
+test $# -eq 1 || Usage
 
 # Check TargetFile Exist.
-test -e ${1} || exit
+test -e ${1} || Usage
 
 # Set Target Site List.
 TARGET_LIST=${1}
