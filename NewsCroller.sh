@@ -1,15 +1,12 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/05/03
-# Ver   : 1.2
+# Data  : 2015/05/04
+# Ver   : 1.3
 ################################
 # Web Page Crolling.
 function WebCroller()
 {
-	# Web Page Download.
-	wget -q ${URL} -O ${FILE_ORIGIN}
-
 	# Web Page Analyze
 	HtmlAnalyze
 
@@ -18,6 +15,13 @@ function WebCroller()
 
 	# Diff Check
 	HtmlDiffCheck
+}
+
+# Get Rss File From Web.
+function GetRss()
+{
+	# Web Page Download.
+	wget -q ${URL} -O ${FILE_ORIGIN}
 }
 
 # Key Word Check.
@@ -141,6 +145,7 @@ function ClearHistoryFile()
 function SetTmpFileName()
 {
 	FILE_ORIGIN=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-org`
+	FILE_ORIGIN_OLD=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-org.old`
 	FILE_TEMP_NEW=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-new`
 	FILE_TEMP_OLD_1=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-old.1`
 	FILE_TEMP_OLD_2=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-old.2`
@@ -227,11 +232,30 @@ function Analyze()
 		# Set Key Word.
 		SetKeyWord
 
-		# WebCroll.
-		WebCroller "${KEY_WORD}"
+		# Get Rss File.
+		GetRss
+
+		# Origin File Diff Check.
+		if [ -e ${FILE_ORIGIN_OLD} ] && [ `md5sum ${FILE_ORIGIN} | awk '{print $1}'` != `md5sum ${FILE_ORIGIN_OLD} | awk '{print $1}'` ]
+		then
+			# Ditect Differ.
+			# WebCroll.
+			WebCroller "${KEY_WORD}"
+
+			# Original File is Move to Old.
+			mv ${FILE_ORIGIN} ${FILE_ORIGIN_OLD}
+		elif [ ! -e ${FILE_ORIGIN_OLD} ]
+		then
+			# Old Origin not exist.
+			# WebCroll.
+			WebCroller "${KEY_WORD}"
+
+			# Original File is Move to Old.
+			mv ${FILE_ORIGIN} ${FILE_ORIGIN_OLD}
+		fi
 
 		# Clean Up Temp File.
-		rm -f ${FILE_ORIGIN} ${FILE_TEMP_TMP}
+		rm -f ${FILE_TEMP_TMP}
 	fi
 
 }
@@ -275,7 +299,7 @@ TMP_DIR="/tmp/"
 MAX_P=0
 
 # Function Export.
-export -f Analyze ClearHistoryFile HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetHeader SetHistoryFile SetKeyWord SetTmpFileName SetUrl TweetNews WebCroller
+export -f Analyze ClearHistoryFile GetRss HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetHeader SetHistoryFile SetKeyWord SetTmpFileName SetUrl TweetNews WebCroller
 
 # Data Export.
 export COUNT_HIST CHECK_URL VALID_DATA KEY_WORD MSG_BOT PATH TMP_DIR TARGET_LIST
