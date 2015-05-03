@@ -34,7 +34,12 @@ function KeyWordCheck()
 function HtmlAnalyze()
 {
 	# Html File Exist Check
-	test -e ${FILE_TEMP_NEW} && mv ${FILE_TEMP_NEW} ${FILE_TEMP_OLD}
+	if [ -e  ${FILE_TEMP_NEW} ]
+	then
+		# Set Uniq History Data.
+		cat ${FILE_TEMP_NEW} ${FILE_TEMP_OLD} > ${FILE_TEMP_TMP}
+		cat ${FILE_TEMP_TMP} | sort | uniq >  ${FILE_TEMP_OLD}
+	fi
 
 	# Convert to News Title and SITE_DATA
 	grep -A 1 "<title>" ${FILE_ORIGIN} \
@@ -55,10 +60,13 @@ function HtmlAnalyze()
 function HtmlDiffCheck()
 {
 	# Old File Check
-	test -e ${FILE_TEMP_OLD} || return
+	if [ `wc -l ${FILE_TEMP_OLD} | awk '{print $1}'` -eq 0 ]
+	then
+		return
+	fi
 
 	# Diff Check
-	comm -23 ${FILE_TEMP_NEW} ${FILE_TEMP_OLD} > ${FILE_TEMP_TMP} && TweetNews
+	cat ${FILE_TEMP_OLD_1} ${FILE_TEMP_OLD_2} | sort | uniq |  comm -23 ${FILE_TEMP_NEW} - > ${FILE_TEMP_TMP} && TweetNews
 }
 
 # FooterSetting for TempFileName.
@@ -75,13 +83,69 @@ function SetHeader()
 	HEADER=(`grep -E '^#!,' ${TARGET_LIST} | awk -F"," '{ print $3 }'`)
 }
 
+# Set History File.
+function SetHistoryFile()
+{
+	# File Exist Check.
+	if [ ! -e ${FILE_TEMP_OLD_1} ]
+	then
+		# write to .old.1
+		FILE_TEMP_OLD=${FILE_TEMP_OLD_1}
+
+		# crete .old.1
+		touch ${FILE_TEMP_OLD_2} 
+
+		# old.1 file is newer than old.2 file.
+		sleep 1s
+
+		# crete .old.2
+		touch ${FILE_TEMP_OLD_1} 
+		return
+	fi
+
+	# New File Check.
+	if [ ${FILE_TEMP_OLD_1} -nt ${FILE_TEMP_OLD_2} ]
+	then
+		# FILE_TEMP_OLD_1 is new
+		if [ `wc -l ${FILE_TEMP_OLD_1} | awk '{print $1}'` -lt ${COUNT_HIST} ]
+		then
+			# write to .old.1
+			FILE_TEMP_OLD=${FILE_TEMP_OLD_1}
+		else
+			# write to .old.2
+			FILE_TEMP_OLD=${FILE_TEMP_OLD_2}
+			ClearHistoryFile ${FILE_TEMP_OLD}
+		fi
+	else
+		# FILE_TEMP_OLD_2 is new
+		if [ `wc -l ${FILE_TEMP_OLD_2} | awk '{print $1}'` -lt ${COUNT_HIST} ]
+		then
+			# write to .old.2
+			FILE_TEMP_OLD=${FILE_TEMP_OLD_2}
+		else
+			# write to .old.1
+			FILE_TEMP_OLD=${FILE_TEMP_OLD_1}
+			ClearHistoryFile ${FILE_TEMP_OLD}
+		fi
+	fi
+}
+
+# Clear History File.
+function ClearHistoryFile()
+{
+	# Make Clear File at mod cmd.
+	:> $1
+}
+
 # TmpFileName Setting.
 function SetTmpFileName()
 {
 	FILE_ORIGIN=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-org`
 	FILE_TEMP_NEW=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-new`
-	FILE_TEMP_OLD=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-old`
+	FILE_TEMP_OLD_1=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-old.1`
+	FILE_TEMP_OLD_2=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-old.2`
 	FILE_TEMP_TMP=`echo ${TMP_DIR}${HEADER}${SITE} | sed -E 's/[[:digit:]]}?,http.+\///g' | sed -s 's/,.*//g'``echo -${FOOTER}-tmp`
+	SetHistoryFile
 }
 
 # Url Setting.
@@ -167,7 +231,7 @@ function Analyze()
 		WebCroller "${KEY_WORD}"
 
 		# Clean Up Temp File.
-		#rm -f ${FILE_ORIGIN} ${FILE_TEMP_TMP}
+		rm -f ${FILE_ORIGIN} ${FILE_TEMP_TMP}
 	fi
 
 }
@@ -196,11 +260,11 @@ MSG_BOT='[自動ツイート]'
 # Check URL On
 CHECK_URL="1"
 
+# Max History.
+COUNT_HIST='30'
+
 # Key Word.
 KEY_WORD=''
-
-# Twitter Account Name.
-TW_USER=''
 
 # Tmp File Directory
 TMP_DIR="/tmp/"
@@ -211,10 +275,10 @@ TMP_DIR="/tmp/"
 MAX_P=0
 
 # Function Export.
-export -f Analyze HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetHeader SetKeyWord SetTmpFileName SetUrl TweetNews WebCroller
+export -f Analyze ClearHistoryFile HtmlAnalyze HtmlDiffCheck KeyWordCheck SetFooter SetHeader SetHistoryFile SetKeyWord SetTmpFileName SetUrl TweetNews WebCroller
 
 # Data Export.
-export CHECK_URL VALID_DATA KEY_WORD MSG_BOT PATH TMP_DIR TW_USER TARGET_LIST
+export COUNT_HIST CHECK_URL VALID_DATA KEY_WORD MSG_BOT PATH TMP_DIR TARGET_LIST
 
 # Analyze Function for Multi Process.
 echo ${SITE_DATA[@]} | sed 's/ /\n/g' | xargs -P${MAX_P} -n1 -I % bash -c "Analyze %"
