@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/05/06
-# Ver   : 1.2
+# Ver   : 1.3
 ################################
 # for EL-USB-RT
 
@@ -10,11 +10,8 @@
 WARN_TEMP='30'
 CRITICAL_TEMP='35'
 
-WARN_HYD=''
-CRITICAL_HYD=''
-
-WARN_DRY='40'
-CRITICAL_DRY='30'
+WARN_HYD=':40'
+CRITICAL_HYD=':30'
 
 WARN_DISCOMFORT='75'
 CRITICAL_DISCOMFORT='80'
@@ -26,6 +23,7 @@ fi
 
 if [ "$1" = "config" ]; then
 
+	# glaph common
         echo 'graph_title room_temperature/himidity'
         echo 'graph_args -l 0 '
         echo 'graph_vlabel Temp/Himid'
@@ -43,13 +41,7 @@ if [ "$1" = "config" ]; then
 	echo "himidity.warning ${WARN_HYD}"
 	echo "himidity.critical ${CRITICAL_HYD}"
 
-	#dry data
-        echo 'dry.label dry'
-        echo 'dry.draw LINE'
-	echo "dry.warning ${WARN_DRY}"
-	echo "dry.critical ${CRITICAL_DRY}"
-
-	#himidity data
+	#discomfort index data
         echo 'discomfort.label discomfort index'
         echo 'discomfort.draw LINE'
 	echo "discomfort.warning ${WARN_DISCOMFORT}"
@@ -57,6 +49,13 @@ if [ "$1" = "config" ]; then
 
         print_warning temperature
         print_critical temperature
+
+        print_warning himidity
+        print_critical himidity
+
+        print_warning discomfort
+        print_critical discomfort
+
         exit 0
 fi
 
@@ -65,10 +64,8 @@ work=`/usr/local/bin/tempsensor -s`
 ROOM_TEMP=`echo ${work} | awk -F',' '{print $1}'`
 ROOM_HYD=`echo ${work} | awk -F',' '{print $2}'`
 ROOM_RELUX=`echo "scale=2; 0.81*$ROOM_TEMP+0.01*$ROOM_HYD*(0.99*$ROOM_TEMP-14.3)+46.3" | bc | cut -d "." -f 1`
-ROOM_DRY=$((100-${ROOM_RELUX}))
 
 echo "temperature.value ${ROOM_TEMP}"
 echo "himidity.value ${ROOM_HYD}"
-echo "dry.value ${ROOM_DRY}"
 echo "discomfort.value ${ROOM_RELUX}"
 
