@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/05/06
-# Ver   : 1.3
+# Ver   : 1.3.1
 ################################
 # for EL-USB-RT
 
@@ -10,8 +10,8 @@
 WARN_TEMP='30'
 CRITICAL_TEMP='35'
 
-WARN_HYD=':40'
-CRITICAL_HYD=':30'
+WARN_HYD='40:'
+CRITICAL_HYD='30:'
 
 WARN_DISCOMFORT='75'
 CRITICAL_DISCOMFORT='80'
@@ -35,13 +35,13 @@ if [ "$1" = "config" ]; then
 	echo "temperature.warning ${WARN_TEMP}"
 	echo "temperature.critical ${CRITICAL_TEMP}"
 
-	#himidity data
+	# himidity data
         echo 'himidity.label himidity'
         echo 'himidity.draw LINE'
 	echo "himidity.warning ${WARN_HYD}"
 	echo "himidity.critical ${CRITICAL_HYD}"
 
-	#discomfort index data
+	# discomfort index data
         echo 'discomfort.label discomfort index'
         echo 'discomfort.draw LINE'
 	echo "discomfort.warning ${WARN_DISCOMFORT}"
