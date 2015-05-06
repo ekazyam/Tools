@@ -2,9 +2,12 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/05/06
-# Ver   : 1.3.1
+# Ver   : 1.4.0
 ################################
 # for EL-USB-RT
+
+# path of tempsensor binary
+BIN_PATH="/usr/local/bin"
 
 # Setting threshold value for warn and critical.
 WARN_TEMP='30'
@@ -59,7 +62,7 @@ if [ "$1" = "config" ]; then
         exit 0
 fi
 
-work=`/usr/local/bin/tempsensor -s`
+work=`${BIN_PATH}/tempsensor -s`
 
 ROOM_TEMP=`echo ${work} | awk -F',' '{print $1}'`
 ROOM_HYD=`echo ${work} | awk -F',' '{print $2}'`
