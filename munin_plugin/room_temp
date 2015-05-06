@@ -1,10 +1,20 @@
 #!/bin/bash
-i################################
+################################
 # Author: Rum Coke
 # Data  : 2015/05/06
 # Ver   : 1.0
-#################################
+################################
 # for EL-USB-RT
+
+# Setting warn and critical param.
+# Set:='n'
+# NotSet:''
+WARN_TEMP='30'
+WARN_HYD=''
+WARN_DISCOMFORT='75'
+CRITICAL_TEMP='35'
+CRITICAL_HYD=''
+CRITICAL_DISCOMFORT='80'
 
 if [ "$1" = "autoconf" ]; then
         echo yes
@@ -21,6 +31,8 @@ if [ "$1" = "config" ]; then
 	# temp data
         echo 'temperature.label temperature'
         echo 'temperature.draw LINE'
+	echo "temperature.warning ${WARN_TEMP}"
+	echo "temperature.critical ${CRITICAL_TEMP}"
 
 	#himidity data
         echo 'himidity.label himidity'
@@ -44,3 +56,4 @@ ROOM_RELUX=`echo "scale=2; 0.81*$ROOM_TEMP+0.01*$ROOM_HYD*(0.99*$ROOM_TEMP-14.3)
 echo "temperature.value ${ROOM_TEMP}"
 echo "himidity.value ${ROOM_HYD}"
 echo "discomfort.value ${ROOM_RELUX}"
+
