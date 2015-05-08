@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/05/04
-# Ver   : 1.2.0
+# Data  : 2015/05/07
+# Ver   : 1.3.0
 ################################
 # Usage
 function Usage()
@@ -46,11 +46,12 @@ function Search()
 	then
 		# Normal.
 		echo '[ FROM ] -> [ TO ]'
-		grep -ER '(href\ ?=\ ?.+\.(php|html|htm)|(include|require(_once)?).+\.(php|html|htm)|<link\ .+\.(php|html|htm))' $1 | grep -E '^.+\.(php|html|htm)' | grep -Eo '.*\.(php|html|htm)' | sed -E 's/[!?#$%&()<>{}='\''\":;]/\ /g' | sed -e 's/\ /\ \ /g' | sed -E 's/[[:space:]]{2}.*[[:space:]]{2}/\ /g'| awk -F' ' '{print $1,"->",$2}' | sort
+		grep -ER '(href\ ?=\ ?.+\.(php|html|htm)|(include|require(_once)?).+\.(php|html|htm)|<link\ .+\.(php|html|htm))' $1 | grep -E '^.+\.(php|html|htm)' | grep -Eo '.*\.(php|html|htm)' | sed -r 's/[!?#$%&()<>{}='\''\":;]/\ /g' | sed -e 's/\ /\ \ /g' | sed -r 's/[[:space:]]{2}.*[[:space:]]{2}/\ /g'| awk -F' ' '{print $1,"->",$2}' | sort
+        # 
 	else
 		# Reverse.
 		echo '[ TO ] -> [ FROM ]'
-		grep -ER '(href\ ?=\ ?.+\.(php|html|htm)|(include|require(_once)?).+\.(php|html|htm)|<link\ .+\.(php|html|htm))' $1 | grep -E '^.+\.(php|html|htm)' | grep -Eo '.*\.(php|html|htm)' | sed -E 's/[!?#$%&()<>{}='\''\":;]/\ /g' | sed -e 's/\ /\ \ /g' | sed -E 's/[[:space:]]{2}.*[[:space:]]{2}/\ /g'| awk -F' ' '{print $2,"->",$1}' | sort
+		grep -ER '(href\ ?=\ ?.+\.(php|html|htm)|(include|require(_once)?).+\.(php|html|htm)|<link\ .+\.(php|html|htm))' $1 | grep -E '^.+\.(php|html|htm)' | grep -Eo '.*\.(php|html|htm)' | sed -r 's/[!?#$%&()<>{}='\''\":;]/\ /g' | sed -e 's/\ /\ \ /g' | sed -r 's/[[:space:]]{2}.*[[:space:]]{2}/\ /g'| awk -F' ' '{print $2,"->",$1}' | sort
 	fi
 }
 
