@@ -1,0 +1,92 @@
+#!/bin/bash
+################################
+# Author: Rum Coke
+# Data  : 2015/05/12
+# Ver   : 0.9.0
+################################
+# Set Log Start.
+function SetLogStart()
+{
+	for (( Z = 5; 0 < Z ; --Z ))
+	do
+                # Set Log Start Point.
+                TIME_START=`date --date "-${Z} minutes" +%d/%b/%Y:%H:%M:`
+		POINT_START=`grep -n ${TIME_START} ${LOG} | head -n 1 | sed 's/:.*//g'`
+		if [ ! `echo ${POINT_START}` == '' ]
+		then
+			return
+		fi
+	done
+
+	# Set Log Start Point.
+	TIME_START=`date +%d/%b/%Y:%H:%M:`
+	POINT_START=`grep -n ${TIME_START} ${LOG} | head -n 1 | sed 's/:.*//g'`
+}
+
+# Check Log Line.
+function CheckAccess()
+{
+	# Check Access Log at 5 min before.
+	test -z ${POINT_START} && POINT_START=0
+}
+
+# Check Access Code.
+function CheckAccessCode()
+{
+	for (( Z = 0; Z < ${#CODE[@]}; ++Z ))
+	do
+		ArrayResult[$Z]=`sed -ne \`eval echo "${POINT_START}"\`,\`eval echo $\`p $LOG | grep ${CODE[$Z]} | wc -l`
+	done
+}
+
+################################
+# Main Function
+################################
+# Locale Setting.
+LANG=C
+
+# Target Log.
+LOG='/var/log/nginx/access.log'
+
+# Setting threshold value for warn and critical.
+WARN_VALUE='10'
+CRITICAL_VALUE='30'
+
+# Search Http Code.
+CODE=( 200 400 401 403 404 500 503 )
+
+# Set Log Start.
+SetLogStart
+
+# Check Log Start and End.
+CheckAccess
+
+# Check Access Count.
+CheckAccessCode
+
+if [ "$1" = "autoconf" ]; then
+	echo yes
+       	exit 0
+fi
+
+if [ "$1" = "config" ]; then
+	# glaph common
+	echo 'graph_title HttpAccess'
+	echo 'graph_args -l 0 '
+	echo 'graph_vlabel access'
+	echo 'graph_category system'
+
+	# Set Values.
+	for (( Z = 0; Z < ${#CODE[@]}; ++Z ))
+	do
+		echo "${CODE[$Z]}.label ${CODE[$Z]}"
+		echo "${CODE[$Z]}.draw LINE"
+	done
+
+	exit 0
+fi
+
+for (( Z = 0; Z < ${#CODE[@]}; ++Z ))
+do
+	echo "${CODE[$Z]}.value ${ArrayResult[$Z]}"
+done
