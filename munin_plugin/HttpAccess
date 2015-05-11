@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/05/12
-# Ver   : 0.9.0
+# Ver   : 0.9.1
 ################################
 # Set Log Start.
 function SetLogStart()
@@ -27,7 +27,8 @@ function SetLogStart()
 function CheckAccess()
 {
 	# Check Access Log at 5 min before.
-	test -z ${POINT_START} && POINT_START=0
+	test -z ${POINT_START} && CheckAccessCodeZero
+	test -z ${POINT_START} || CheckAccessCode
 }
 
 # Check Access Code.
@@ -39,6 +40,14 @@ function CheckAccessCode()
 	done
 }
 
+# Check Access Code.
+function CheckAccessCodeZero()
+{
+	for (( Z = 0; Z < ${#CODE[@]}; ++Z ))
+	do
+		ArrayResult[$Z]=0
+	done
+}
 ################################
 # Main Function
 ################################
@@ -60,9 +69,6 @@ SetLogStart
 
 # Check Log Start and End.
 CheckAccess
-
-# Check Access Count.
-CheckAccessCode
 
 if [ "$1" = "autoconf" ]; then
 	echo yes
