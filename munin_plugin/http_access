@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/05/12
-# Ver   : 0.9.1
+# Ver   : 1.0.1
 ################################
 # Set Log Start.
 function SetLogStart()
@@ -27,7 +27,6 @@ function SetLogStart()
 function CheckAccess()
 {
 	# Check Access Log at 5 min before.
-	test -z ${POINT_START} && CheckAccessCodeZero
 	test -z ${POINT_START} || CheckAccessCode
 }
 
@@ -40,29 +39,18 @@ function CheckAccessCode()
 	done
 }
 
-# Check Access Code.
-function CheckAccessCodeZero()
-{
-	for (( Z = 0; Z < ${#CODE[@]}; ++Z ))
-	do
-		ArrayResult[$Z]=0
-	done
-}
 ################################
 # Main Function
 ################################
+
 # Locale Setting.
 LANG=C
 
 # Target Log.
 LOG='/var/log/nginx/access.log'
 
-# Setting threshold value for warn and critical.
-WARN_VALUE='10'
-CRITICAL_VALUE='30'
-
 # Search Http Code.
-CODE=( 200 400 401 403 404 500 503 )
+CODE=( 200 401 403 404 )
 
 # Set Log Start.
 SetLogStart
@@ -77,16 +65,20 @@ fi
 
 if [ "$1" = "config" ]; then
 	# glaph common
-	echo 'graph_title HttpAccess'
-	echo 'graph_args -l 0 '
+	echo 'graph_title Http Access Code'
+	echo 'graph_args --base 1000 -l 0'
 	echo 'graph_vlabel access'
 	echo 'graph_category system'
+	echo 'graph_order 200 401 403 404'
+	echo 'graph_scale yes'
+	echo 'graph_printf %3.0lf'
 
 	# Set Values.
 	for (( Z = 0; Z < ${#CODE[@]}; ++Z ))
 	do
 		echo "${CODE[$Z]}.label ${CODE[$Z]}"
-		echo "${CODE[$Z]}.draw LINE"
+		echo "${CODE[$Z]}.draw LINE1"
+		echo "${CODE[$Z]}.info Http Access Codes."
 	done
 
 	exit 0
@@ -94,5 +86,6 @@ fi
 
 for (( Z = 0; Z < ${#CODE[@]}; ++Z ))
 do
-	echo "${CODE[$Z]}.value ${ArrayResult[$Z]}"
+	echo "${CODE[$Z]}.value ${ArrayResult[$Z]:=0}"
 done
+
