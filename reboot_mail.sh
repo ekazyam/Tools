@@ -30,7 +30,7 @@ function SetHeader()
 	# Mail Header.
 	Header_From='From:'${From}
 	Header_To='To:'${To}
-	Header_Subject=`echo ${Subject} | base64 | tr -d \n`
+	Header_Subject=`echo ${Subject} | /usr/bin/base64 | tr -d \n`
 	Header_Subject='Subject:=?utf-8?B?'"${Header_Subject}"'?='
 }
 
