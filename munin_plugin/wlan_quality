@@ -1,24 +1,44 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/05/18
-# Ver   : 0.9.0
+# Data  : 2015/05/19
+# Ver   : 0.9.1
 ################################
 # Set ESSID
 function SetEssid()
 {
-	ArrayResult=(`iwlist wlan0 scan | egrep -oe 'Quality=[[:digit:]]{1,2}\/[[:digit:]]{1,2}' -oe 'ESSID:.*' | sed -e 's/ESSID:/\ ESSID:/g' -e 's/Quality=/\ Quality=/g' | sed -r 's/(Quality=|\/[[:digit:]]{2,3}|ESSID:"|"|^\ )//g'`)
+	ArrayResult=(`iwlist wlan0 scan | egrep -oe 'Quality=[[:digit:]]{1,2}\/[[:digit:]]{1,2}' -oe 'ESSID:.*'`)
 }
 
 # Check Signals.
 function CheckSignals()
 {
-	for (( Z = 0; Z < ${#ArrayResult[@]}; ++Z ))
-	do
-		LABEL[$Z]=`echo ${ArrayResult[$Z]} | awk '{print $1}'`
-		SIGNAL[$Z]=`echo ${ArrayResult[$Z+1]} | awk '{print $2}'`
-	done
-	exit
+	I=0
+	if [ `echo ${ArrayResult[0]} | egrep '^ESSID:'` ]
+	then
+		while (( Z < ${#ArrayResult[@]} ))
+		do
+			if [ ! `echo ${ArrayResult[$Z]} | egrep '(\x00)+'` ]
+			then
+				LABEL[$I]=`echo ${ArrayResult[$Z]} | sed -r 's/(ESSID:|")//g'`
+				SIGNAL[$I]=`echo ${ArrayResult[$(($Z+1))]} | sed -r 's/(Quality=|\/[[:digit:]]{2,3})//g'`
+				I=$(($I+1))
+			fi
+			Z=$(($Z+2))
+		done
+
+	else
+		while (( Z < ${#ArrayResult[@]} ))
+		do
+			if [ ! `echo ${ArrayResult[(($Z+1))]} | egrep '(\x00)+'` ]
+			then
+				LABEL[$I]=`echo ${ArrayResult[$(($Z+1))]} | sed -r 's/(ESSID:|")//g'`
+				SIGNAL[$I]=`echo ${ArrayResult[$Z]} | sed -r 's/(Quality=|\/[[:digit:]]{2,3})//g'`
+				I=$(($I+1))
+			fi
+			Z=$(($Z+2))
+		done
+	fi
 }
 
 ################################
@@ -26,7 +46,7 @@ function CheckSignals()
 ################################
 
 # Set IFS
-IFS=" "
+#IFS=" "
 
 # Locale Setting.
 LANG=C
