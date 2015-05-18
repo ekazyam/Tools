@@ -7,7 +7,7 @@
 # Set ESSID
 function SetEssid()
 {
-	ArrayResult=(`iwlist wlan0 scan | egrep -oe 'Quality=[[:digit:]]{1,2}\/[[:digit:]]{1,2}' -oe 'ESSID:.*'`)
+	ArrayResult=(`/sbin/iwlist wlan0 scan | egrep -oe 'Quality=[[:digit:]]{1,2}\/[[:digit:]]{1,2}' -oe 'ESSID:.*'`)
 }
 
 # Check Signals.
@@ -44,19 +44,12 @@ function CheckSignals()
 ################################
 # Main Function
 ################################
-
-# Set IFS
-#IFS=" "
-
 # Locale Setting.
 LANG=C
 
 # Warn and Critical.(ms)
 WARN_RES='30.0:'
 CRITICAL_RES='10.0:'
-
-# ESSID
-URL=(  )
 
 # Exec iwlist.
 SetEssid
@@ -79,7 +72,7 @@ if [ "$1" = "config" ]; then
 	echo 'graph_printf %6.2lf'
 
 	# Set Info.
-	for (( Z = 0; Z < ${#URL[@]}; ++Z ))
+	for (( Z = 0; Z < ${#LABEL[@]}; ++Z ))
 	do
 		echo "${LABEL[$Z]}.label ${LABEL[$Z]}"
 		echo "${LABEL[$Z]}.draw LINE1"
@@ -92,7 +85,7 @@ if [ "$1" = "config" ]; then
 fi
 
 # Set Value.
-for (( Z = 0; Z < ${#SIGNAL[@]}; ++Z ))
+for (( Z = 0; Z < ${#LABEL[@]}; ++Z ))
 do
 	echo "${LABEL[$Z]}.value ${SIGNAL[$Z]}"
 done
