@@ -1,0 +1,79 @@
+#!/bin/bash
+################################
+# Author: Rum Coke
+# Data  : 2015/05/18
+# Ver   : 0.9.0
+################################
+# Set ESSID
+function SetEssid()
+{
+	ArrayResult=(`iwlist wlan0 scan | egrep -oe 'Quality=[[:digit:]]{1,2}\/[[:digit:]]{1,2}' -oe 'ESSID:.*' | sed -e 's/ESSID:/\ ESSID:/g' -e 's/Quality=/\ Quality=/g' | sed -r 's/(Quality=|\/[[:digit:]]{2,3}|ESSID:"|"|^\ )//g'`)
+}
+
+# Check Signals.
+function CheckSignals()
+{
+	for (( Z = 0; Z < ${#ArrayResult[@]}; ++Z ))
+	do
+		LABEL[$Z]=`echo ${ArrayResult[$Z]} | awk '{print $1}'`
+		SIGNAL[$Z]=`echo ${ArrayResult[$Z+1]} | awk '{print $2}'`
+	done
+	exit
+}
+
+################################
+# Main Function
+################################
+
+# Set IFS
+IFS=" "
+
+# Locale Setting.
+LANG=C
+
+# Warn and Critical.(ms)
+WARN_RES='30.0:'
+CRITICAL_RES='10.0:'
+
+# ESSID
+URL=(  )
+
+# Exec iwlist.
+SetEssid
+
+# Signal Check.
+CheckSignals
+
+if [ "$1" = "autoconf" ]; then
+	echo yes
+       	exit 0
+fi
+
+if [ "$1" = "config" ]; then
+	# Glaph Common
+	echo 'graph_title Wi-Fi signal strength'
+	echo 'graph_args --base 1000 -l 0'
+	echo 'graph_vlabel Signal Quality'
+	echo 'graph_category network'
+	echo 'graph_scale yes'
+	echo 'graph_printf %6.2lf'
+
+	# Set Info.
+	for (( Z = 0; Z < ${#URL[@]}; ++Z ))
+	do
+		echo "${LABEL[$Z]}.label ${LABEL[$Z]}"
+		echo "${LABEL[$Z]}.draw LINE1"
+		echo "${LABEL[$Z]}.warning ${WARN_RES}"
+		echo "${LABEL[$Z]}.critical ${CRITICAL_RES}"
+		echo "${LABEL[$Z]}.info Signal Strength"
+	done
+
+	exit 0
+fi
+
+# Set Value.
+for (( Z = 0; Z < ${#SIGNAL[@]}; ++Z ))
+do
+	echo "${LABEL[$Z]}.value ${SIGNAL[$Z]}"
+done
+
