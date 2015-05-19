@@ -2,7 +2,11 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/05/19
+<<<<<<< HEAD
 # Ver   : 0.9.3
+=======
+# Ver   : 0.9.2
+>>>>>>> 0a799b739d79508706186a1a01be74c189501892
 ################################
 # Set ESSID
 function SetEssid()
@@ -30,7 +34,11 @@ function CheckSignals()
 	else
 		while (( Z < ${#ArrayResult[@]} ))
 		do
+<<<<<<< HEAD
 			if [ ! `echo ${ArrayResult[$((Z+1))]} | egrep '(\x00)+'` ]
+=======
+			if [ ! `echo ${ArrayResult[$(($Z+1))]} | egrep '(\x00)+'` ]
+>>>>>>> 0a799b739d79508706186a1a01be74c189501892
 			then
 				LABEL[$I]=`echo ${ArrayResult[$(($Z+1))]} | sed -r 's/(ESSID:|")//g'`
 				SIGNAL[$I]=`echo ${ArrayResult[$Z]} | sed -r 's/(Quality=|\/[[:digit:]]{2,3})//g'`
@@ -47,9 +55,9 @@ function CheckSignals()
 # Locale Setting.
 LANG=C
 
-# Warn and Critical.(ms)
-WARN_RES='30.0:'
-CRITICAL_RES='10.0:'
+# Warn and Critical.
+WARN_SIG='30.0:'
+CRITICAL_SIG='10.0:'
 
 # Exec iwlist.
 SetEssid
@@ -76,8 +84,8 @@ if [ "$1" = "config" ]; then
 	do
 		echo "${LABEL[$Z]}.label ${LABEL[$Z]}"
 		echo "${LABEL[$Z]}.draw LINE1"
-		echo "${LABEL[$Z]}.warning ${WARN_RES}"
-		echo "${LABEL[$Z]}.critical ${CRITICAL_RES}"
+		echo "${LABEL[$Z]}.warning ${WARN_SIG}"
+		echo "${LABEL[$Z]}.critical ${CRITICAL_SIG}"
 		echo "${LABEL[$Z]}.info Signal Strength"
 	done
 
