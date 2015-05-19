@@ -2,12 +2,12 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/05/19
-# Ver   : 0.9.1
+# Ver   : 0.9.3
 ################################
 # Set ESSID
 function SetEssid()
 {
-	ArrayResult=(`/sbin/iwlist wlan0 scan | egrep -oe 'Quality=[[:digit:]]{1,2}\/[[:digit:]]{1,2}' -oe 'ESSID:.*'`)
+	ArrayResult=(`/sbin/iwlist wlan0 scan | egrep -o '(Quality=[[:digit:]]{1,3}\/[[:digit:]]{2,3}|ESSID:.*)'`)
 }
 
 # Check Signals.
@@ -18,7 +18,7 @@ function CheckSignals()
 	then
 		while (( Z < ${#ArrayResult[@]} ))
 		do
-			if [ ! `echo ${ArrayResult[$Z]} | egrep '(\x00)+'` ]
+			if [ ! `echo ${ArrayResult[$Z]} | egrep '(\x00)+'` ] && [ `echo ${ArrayResult[$Z]} | sed -r 's/(ESSID:|")//g'` ]
 			then
 				LABEL[$I]=`echo ${ArrayResult[$Z]} | sed -r 's/(ESSID:|")//g'`
 				SIGNAL[$I]=`echo ${ArrayResult[$(($Z+1))]} | sed -r 's/(Quality=|\/[[:digit:]]{2,3})//g'`
@@ -30,7 +30,7 @@ function CheckSignals()
 	else
 		while (( Z < ${#ArrayResult[@]} ))
 		do
-			if [ ! `echo ${ArrayResult[(($Z+1))]} | egrep '(\x00)+'` ]
+			if [ ! `echo ${ArrayResult[$((Z+1))]} | egrep '(\x00)+'` ]
 			then
 				LABEL[$I]=`echo ${ArrayResult[$(($Z+1))]} | sed -r 's/(ESSID:|")//g'`
 				SIGNAL[$I]=`echo ${ArrayResult[$Z]} | sed -r 's/(Quality=|\/[[:digit:]]{2,3})//g'`
@@ -84,7 +84,6 @@ if [ "$1" = "config" ]; then
 	exit 0
 fi
 
-# Set Value.
 for (( Z = 0; Z < ${#LABEL[@]}; ++Z ))
 do
 	echo "${LABEL[$Z]}.value ${SIGNAL[$Z]}"
