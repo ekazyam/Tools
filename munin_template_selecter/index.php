@@ -13,13 +13,18 @@
 	<script src="js/alert/lib/alertify.js"></script>
 </head>
 <body>
+	<form name="form" method="POST" action="">
 <?php 
-	if ( isset($_POST) )
+	if (isset($_POST['munin_radio']))
 	{
-		print 'data is '.$_POST['template_data'];
+		$target = str_replace('static_' , '' , $_POST['munin_radio'] );
+		$command = './changetemplate.sh ' . $target;
+		exec($command);
 	}
 	include_once('./create_table.php');
 	create_table();
 ?>
+	<input type="submit" id="change" value="submit" >
+	</form>
 </body>
 </html>
