@@ -15,16 +15,13 @@
 <body>
 	<form name="form" method="POST" action="">
 <?php 
-	if (isset($_POST['munin_radio']))
-	{
-		$target = str_replace('static_' , '' , $_POST['munin_radio'] );
-		$command = './changetemplate.sh ' . $target;
-		exec($command);
-	}
-	include_once('./create_table.php');
+	include_once('backend/create_table.php');
+	include_once('backend/cmd_exe.php');
 	create_table();
 ?>
-	<input type="submit" id="change" value="submit" >
 	</form>
+	<div class="change_submit">
+	<input type="submit" id="change" value="submit">
+	</div>
 </body>
 </html>
