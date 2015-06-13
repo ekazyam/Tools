@@ -10,25 +10,24 @@
 * Main Function
 ################################*/
 /* Try Count. */
-$TRY=1;
+$TRY=3;
 
 /* Warn and Critical.(ms) */
 $WARN_RES='1000.0';
 $CRITICAL_RES='5000.0';
 
-
 /* URLs. */
 $URL = array(
- "http://www.defactostandard.co.jp/",
- "http://brandear.jp/",
- "http://www.netprice.co.jp/"
+ "http://www.google.co.jp/",
+ "http://www.yahoo.co.jp/",
+ "http://www.msn.com/"
 );
 
 /* Label for URLs. */
 $URL_LABEL = array(
- "Defact",
- "Brandear",
- "Netprice"
+ "Google",
+ "Yahoo!",
+ "MSN"
 );
 
 /* Exec httping. */
@@ -49,7 +48,7 @@ if( isset($argv[1]))
 	if ( "$argv[1]" == "config" )
 	{
 		/* Glaph Common */
-		PrintData( 'graph_title Http Ping' );
+		PrintData( 'graph_title Http Ping by PHP' );
 		PrintData( 'graph_args --base 1000 -l 0' );
 		PrintData( 'graph_vlabel response(ms)' );
 		PrintData( 'graph_category mytool' );
