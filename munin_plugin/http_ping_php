@@ -9,19 +9,18 @@
 /*##############################
 * Main Function
 ################################*/
-/* Try Count. */
+/* Ping Data */
 $ping_data = new PingData();
 $TRY = $ping_data->getTry();
-
-/* Warn and Critical.(ms) */
-$WARN_RES='1000.0';
-$CRITICAL_RES='5000.0';
 
 /* Url */
 $URL = $ping_data->getUrl();
 
 /* Label */
 $URL_LABEL = $ping_data->getLabel();
+
+/* Warn and Critical.(ms) */
+$graph_data = new GraphData();
 
 /* Exec httping. */
 $ArrayResult = array();
@@ -55,8 +54,8 @@ if( isset($argv[1]))
 		{
 			PrintData( "$URL_LABEL[$Z].label $URL_LABEL[$Z]" );
 			PrintData( "$URL_LABEL[$Z].draw LINE1" );
-			PrintData( "$URL_LABEL[$Z].warning $WARN_RES" );
-			PrintData( "$URL_LABEL[$Z].critical $CRITICAL_RES" );
+			PrintData( "$URL_LABEL[$Z].warning " . $graph_data->getWarn());
+			PrintData( "$URL_LABEL[$Z].critical " . $graph_data->getCritical());
 			PrintData( "$URL_LABEL[$Z].info Http Response." );
 		}
 		exit;
@@ -148,6 +147,25 @@ Class PingData
 	public function getLabel()
 	{
 		return self::URL_LABEL;
+	}
+}
+
+/* Use For Graph. */
+Class GraphData
+{
+	const WARN_RES = '1000.0';
+	const CRITICAL_RES = '5000.0';
+
+	/* Get Warn for Graph. */
+	public function getWarn()
+	{
+		return self::WARN_RES;
+	}
+
+	/* Get Critical for Graph. */
+	public function getCritical()
+	{
+		return self::CRICIAL_RES;
 	}
 }
 ?>
