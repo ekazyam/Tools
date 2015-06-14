@@ -31,7 +31,7 @@ Class HttpPing
 	}
 
 	/* Check HttpPing Response. */
-	function CheckHttpResponse()
+	private function CheckHttpResponse()
 	{
 		for ( $Z = 0; $Z < count($this->url); $Z++ )
 		{
@@ -44,7 +44,7 @@ Class HttpPing
 	}
 
 	/* Send to HttpPing to URLs. */
-	function SendHttpPing()
+	public function SendHttpPing()
 	{
 		for ( $Z = 0; $Z < count($this->url); $Z++ )
 		{
@@ -60,7 +60,7 @@ Class HttpPing
 	}
 	
 	/* Get Ping Avg Data. */
-	function getPingResult()
+	public function getPingResult()
 	{
 		return $this->avg_ping;
 	}
