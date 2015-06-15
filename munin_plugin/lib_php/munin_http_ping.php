@@ -1,15 +1,15 @@
 <?php
 /*##############################
 * Author: Rum Coke
-* Data  : 2015/06/14
-* Ver   : 0.9.4
+* Data  : 2015/06/15
+* Ver   : 0.9.5
 *##############################*/
 /* Use For Ping Command. */
 Class HttpPing
 {
 	/* Define String. */
 	const PING_ERR = 'No valid IPv4 or IPv6 address found for';
-	
+
 	/* For Http Ping Retry Count. */
 	private $try_count = 3;
 
@@ -37,7 +37,7 @@ Class HttpPing
 		{
 			if ( isset($this->result_ping[$Z]))
 			{
-				preg_match('/\/[[:digit:]]+.[[:digit:]]?\//' ,  $this->result_ping[$Z] , $data); 
+				preg_match('/\/[[:digit:]]+.[[:digit:]]?\//' ,  $this->result_ping[$Z] , $data);
 				array_push( $this->avg_ping ,  str_replace('/' , '' , $data ) );
 			}
 		}
@@ -56,9 +56,9 @@ Class HttpPing
 		}
 
 		/* Data Setting */
-		self::CheckHttpResponse();	
+		$this->CheckHttpResponse();	
 	}
-	
+
 	/* Get Ping Avg Data. */
 	public function getPingResult()
 	{
