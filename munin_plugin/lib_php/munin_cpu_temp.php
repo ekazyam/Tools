@@ -1,8 +1,8 @@
 <?php
 /*##############################
 * Author: Rum Coke
-* Data  : 2015/06/16
-* Ver   : 0.9.0
+* Data  : 2015/06/18
+* Ver   : 0.9.1
 *##############################*/
 /* Measurement Cpu Temp */
 Class CpuTemp
@@ -13,7 +13,7 @@ Class CpuTemp
 	/* Execute */
 	public function measureTemp()
 	{
-		exec( '/usr/bin/sensors | egrep \'+[[:digit:]]+\.[[:digit:]]{1}\' | awk \'{ print $3}\' | sed -r \'s/(\+|.C)//g\' ' , $this->cpu_temp[0]);
+		exec( '/usr/bin/sensors | 'Core [[:digit:]]+' | egrep \'+[[:digit:]]+\.[[:digit:]]{1}\' | awk \'{ print $3}\' | sed -r \'s/(\+|.C)//g\' ' , $this->cpu_temp[0]);
 	}
 	
 	/* Get Data. */
