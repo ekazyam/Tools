@@ -1,0 +1,74 @@
+#! /bin/bash
+
+### BEGIN INIT INFO
+# Provides:          a500bp
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Description:       starts FastCGI for a500bp
+### END INIT INFO
+
+function initGpio()
+{
+	# Check Init GPIO
+	if [ ! -e "${TARGET_DIR}" ]
+	then
+		# Init GPIO
+		echo "$GPIO" > /sys/class/gpio/export
+	fi
+}
+
+function checkGpio()
+{
+	while true
+	do
+		if [ `cat ${TARGET_DIR}/value` == ${ON} ]
+		then
+			# Sensor On.
+			#echo "ON." >> /tmp/sensor.log
+			
+			# Execute.
+			executeCmd
+		fi
+
+		# Wait.
+		sleep ${TIME}
+	done	
+}
+
+function executeCmd()
+{
+	cat /home/pi/tools/template.txt | /home/pi/tools/webhooks.sh > /dev/null
+	# Wait.
+	sleep ${TIME_CMD}
+}
+
+#####################
+# Main Function.
+#####################
+# Set Path.
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# GPIO No
+GPIO=25
+
+# Wait Time.
+TIME=2s
+
+# Wait for Cmd.
+TIME_CMD=6s
+
+# Target Directory.
+TARGET_DIR="/sys/class/gpio/gpio${GPIO}"
+
+# On
+ON=1
+
+# Init Gpio.
+initGpio
+
+# Check Gpio.
+checkGpio &
+
+# End Function. #
