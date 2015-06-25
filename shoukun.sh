@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/06/24
-# Ver   : 0.9.0
+# Data  : 2015/06/25
+# Ver   : 0.9.1
 ################################
 
 #####################
@@ -10,7 +10,6 @@
 #####################
 function checkArg()
 {
-	echo $1
 	if [ $1 -eq '' ]
 	then
 		TEXT=$1
@@ -65,7 +64,7 @@ SPEAKER=show
 URL="https://api.voicetext.jp/v1/tts"
 
 # Sound File.
-SOUND_NAME=moyamoya
+SOUND_NAME=/tmp/moyamoya
 
 # Sound File Format. 
 # default : wav
@@ -85,11 +84,11 @@ PITCH=100
 
 # Speed. from 50 to 400.
 # default : 100
-SPEED=100
+SPEED=95
 
 # Volume. from 50 to 200.
 # default : 100
-VOLUME=150
+VOLUME=200
 
 # Check Arg.
 if [ $# -eq 0 ]
