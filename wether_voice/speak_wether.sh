@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/06/27
-# Ver   : 0.9.0
+# Ver   : 0.9.1
 ################################
 
 ##################
@@ -10,18 +10,69 @@
 ##################
 function speakVoice()
 {
+	# Check Lock File Exist.
+	if [ ! -e ${LOCK} ]
+	then
+		# Create Lock.
+		createLock
+		
+		# Exit
+		exit
+	fi
+
+	# Check Time.
+	if [ `date +%H%M` -lt ${TIME} ]
+	then
+		exit
+	fi
+
+	# Check Day.
+	if [ `cat ${LOCK}` -eq `date +%y%m%d` ]
+	then
+		exit
+	fi
+
 	# Check Voice File Exist.
 	if [ -e ${VOICE_FILE} ]
 	then
-		aplay ${VOICE_FILE}
+		# Speak.
+		speakSound
 	fi
 }
 
+##################
+# Create Lock File.
+##################
+function createLock()
+{
+	# Set Lock File.
+	date +%y%m%d > ${LOCK}
+}
+
+##################
+# Speak.
+##################
+function speakSound()
+{
+	# Speak.
+	aplay ${VOICE_FILE}
+
+	# Create and RewriteLock.
+	createLock
+}
+	
 ##################
 # Main Function.
 ##################
 # Path Setting.
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Speak Time.
+# Execute after AM 08:30 
+TIME=2300
+
+# Lock File.
+LOCK=/tmp/voice.lock
 
 # Target File.
 VOICE_FILE='/tmp/moyamoya.wav'
