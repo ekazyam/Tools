@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/06/27
-# Ver   : 0.9.1
+# Data  : 2015/06/28
+# Ver   : 0.9.2
 ################################
 
 ##################
@@ -69,7 +69,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Speak Time.
 # Execute after AM 08:30 
-TIME=2300
+TIME=0830
 
 # Lock File.
 LOCK=/tmp/voice.lock
@@ -87,6 +87,12 @@ then
 	shoukun.sh `check_wether.sh`
 elif [ ${1} == 'speak' ]
 then
-	# Speak.
-	speakVoice
+	if [ $# -ge 2 ] && [ ${2} == 'force' ]
+	then
+		# Speak force.
+		speakSound
+	else
+		# Speak.
+		speakVoice
+	fi
 fi
