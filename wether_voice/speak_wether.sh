@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/06/28
-# Ver   : 0.9.2
+# Data  : 2015/06/29
+# Ver   : 0.9.3
 ################################
 
 ##################
@@ -13,22 +13,27 @@ function speakVoice()
 	# Check Lock File Exist.
 	if [ ! -e ${LOCK} ]
 	then
-		# Create Lock.
+		# Create Lock File.
 		createLock
 		
-		# Exit
+		# Make Voice File.
+		createSound
+
+		# Exit.
 		exit
 	fi
 
 	# Check Time.
-	if [ `date +%H%M` -lt ${TIME} ]
+	if [ `date +%H%M` -le ${TIME} ]
 	then
+		# Exit.
 		exit
 	fi
 
 	# Check Day.
 	if [ `cat ${LOCK}` -eq `date +%y%m%d` ]
 	then
+		# Exit.
 		exit
 	fi
 
@@ -46,6 +51,15 @@ function speakVoice()
 function createLock()
 {
 	# Set Lock File.
+	date -d yesterday +%y%m%d > ${LOCK}
+}
+
+##################
+# Rewrite Lock File.
+##################
+function rewriteLock()
+{
+	# Set Lock File.
 	date +%y%m%d > ${LOCK}
 }
 
@@ -57,8 +71,17 @@ function speakSound()
 	# Speak.
 	aplay ${VOICE_FILE}
 
-	# Create and RewriteLock.
-	createLock
+	# Rewrite Lock File.
+	rewriteLock
+}
+
+##################
+# Create Sound.
+##################
+function createSound()
+{
+	# Create Sound.	
+	shoukun.sh `check_wether.sh`
 }
 	
 ##################
@@ -78,13 +101,15 @@ LOCK=/tmp/voice.lock
 VOICE_FILE='/tmp/moyamoya.wav'
 if [ $# -eq 0 ]
 then
-	exit 1
+	# Exit.
+	exit
 fi
 
 if [ ${1} == 'make' ]
 then
 	# Make Voice File.
-	shoukun.sh `check_wether.sh`
+	createSound
+
 elif [ ${1} == 'speak' ]
 then
 	if [ $# -ge 2 ] && [ ${2} == 'force' ]
