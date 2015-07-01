@@ -90,6 +90,9 @@ function createSound()
 # Path Setting.
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+# Umask Setting.
+umask 000
+
 # Speak Time.
 # Execute after AM 08:30 
 TIME=0830
