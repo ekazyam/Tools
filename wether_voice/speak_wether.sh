@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/07/01
-# Ver   : 0.9.4
+# Ver   : 0.9.6
 ################################
 
 ##################
@@ -83,6 +83,18 @@ function createSound()
 	# Create Sound.	
 	shoukun.sh `check_wether.sh`
 }
+
+##################
+# Delete Old File.
+##################
+function deleteOld()
+{
+	# Create Old Sound File.
+	if [ -e ${VOICE_FILE} ]
+	then
+		rm ${VOICE_FILE}
+	fi
+}
 	
 ##################
 # Main Function.
@@ -110,6 +122,9 @@ fi
 
 if [ ${1} == 'make' ]
 then
+	# Delete old File.
+	deleteOld
+	
 	# Make Voice File.
 	createSound
 
