@@ -109,7 +109,7 @@ function createWethermsg()
 		# check rain meter
 		checkRainmeter
 	# Sunny
-	elif [ `grep ${WE_SUNNY} ${FILE_RESULT} | wc -l` -ge `grep ${WE_CLOWD} ${FILE_RESULT} | wc -l` ]
+	elif [ `grep ${WE_SUNNY} ${FILE_RESULT} | wc -l` -ge `grep ${WE_CLOUD} ${FILE_RESULT} | wc -l` ]
 	then
 		MSG_VOICE=${MSG_SUNNY}
 	else
@@ -167,7 +167,7 @@ RETRY='3'
 
 # News Key words
 WE_SUNNY='100.png'
-WE_CLOWD='200.png'
+WE_CLOUD='200.png'
 WE_RAIN='300.png'
 WE_SNOW='400.png'
 
