@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/06/25
-# Ver   : 0.9.0
+# Data  : 2015/07/01
+# Ver   : 0.9.1
 ################################
 
 ##################
@@ -67,7 +67,7 @@ function checkWind()
 function createWethermsg()
 {	
 	# Snow
-	if [ `grep ${WE_SN} ${FILE_RESULT} | wc -l` -gt 1 ]
+	if [ `grep ${WE_SN} ${FILE_RESULT} | wc -l` -gt 0 ]
 	then
 		MSG_VOICE=${MSG_SNOW}
 
@@ -83,7 +83,7 @@ function createWethermsg()
 		# check rain meter
 		checkRainmeter
 	# Rainny
-	elif [ `grep ${WE_R} ${FILE_RESULT} | wc -l` -gt 1 ]
+	elif [ `grep ${WE_R} ${FILE_RESULT} | wc -l` -gt 0 ]
 	then
 		MSG_VOICE=`cat ${FILE_RESULT} \
 		| grep ${WE_R} \
@@ -124,7 +124,7 @@ function createWethermsg()
 function checkRainmeter()
 {
 	# Set Today Max Rain Level 0~999
-	TODAY_MAX_RAIN_LEVEL=`echo ${array_rain[@]} | sed 's/ /\n/g' | grep -E [[:digit:]] | sort -r | head -n 1`
+	TODAY_MAX_RAIN_LEVEL=`echo ${array_rain[@]} | sed 's/ /\n/g' | sed 's/mm//g' | grep -E [[:digit:]] | sort -r | head -n 1`
 
 	# Check Rain Level from Template
 	for (( X = 0; X < ${#INDEX_RAIN_LEVEL[@]}; ++X ))
@@ -242,11 +242,11 @@ MSG_AFTER=( \
 "昼間から夜" \
 "午前中からおやつ時" \
 "昼間から夕方" \
-"おやつ時から夜" \
-"午前中から昼間" \
-"昼間からおやつ時" \
-"おやつ時から夕方" \
-"夕方から夜" \
+"おやつ時から夕夜" \
+"午前中から夕昼間" \
+"昼間から夕おやつ時" \
+"おやつ時から夕夕方" \
+"夕方から夕夜" \
 )
 
 # Get Wether
