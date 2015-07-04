@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/07/04
-# Ver   : 0.9.2
+# Ver   : 0.9.3
 ################################
 
 ##################
@@ -52,6 +52,15 @@ function setWetherdata()
 	setResult		
 }
 
+
+#################
+# Set Wether Count.
+#################
+function setWetherCount()
+{
+	WETHER_COUNT=`grep -E '[1-4]{1}0{2}.png' ${FILE_RESULT} | wc -l`
+}
+
 #################
 # Set Wether Result at CSV.
 #################
@@ -78,7 +87,7 @@ function createWethermsg()
 	then
 		MSG_VOICE=${MSG_SNOW}
 	# Rainny at all days
-	elif [ `grep ${WE_RAIN} ${FILE_RESULT} | wc -l` -ge 5 ]
+	elif [ `grep ${WE_RAIN} ${FILE_RESULT} | wc -l` -eq ${WETHER_COUNT}  ]
 	then
 		# Rainny All Days.
 		MSG_VOICE=${MSG_RAIN_ALL}
@@ -149,6 +158,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # Get Wether file from bb excite wether site.
 
+# Check your Address.
+# http://weather.excite.co.jp/spot/
 # 東京都 大手町
 URL='http://weather.excite.co.jp/spot/zp-1006801/'
 
@@ -182,7 +193,7 @@ MSG_SNOW='今日は雪が降るみたいですよ。'
 MSG_ERR='お天気サーバが落ちてるかも。'
 MSG_VOICE=''
 
-# Message from Version 1.4
+# Message from Version 1.5
 MSG_RAIN_METER_MSG=( \
 "ダッシュでなんとかなるかもね。" \
 "折りたたみで大丈夫かも。" \
@@ -203,6 +214,9 @@ cat ${FILE} | sed -n `grep -n title-spot ${FILE} | head -n 1 | cut -d ":" -f 1`,
 
 # SetWetherdata
 setWetherdata
+
+# Set Wether Count.
+setWetherCount
 
 # Create Wether Msg.
 createWethermsg
