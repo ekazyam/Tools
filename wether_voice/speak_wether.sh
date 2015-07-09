@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/07/09
-# Ver   : 0.9.7
+# Data  : 2015/07/10
+# Ver   : 0.9.8
 ################################
 
 ##################
@@ -87,7 +87,7 @@ function twWether()
 	if [! ${VOICE_TEXT} = '' ] && [! ${TW_USER} = '' ]
 	then
 		# Tweet Wether.
-		tw --dm:to=${TW_USER} ${VOICE_TEXT}
+		yes | tw --dm:to=${TW_USER} ${VOICE_TEXT}
 	fi
 }
 
