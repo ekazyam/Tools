@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/07/01
-# Ver   : 0.9.6
+# Data  : 2015/07/09
+# Ver   : 0.9.7
 ################################
 
 ##################
@@ -76,12 +76,29 @@ function speakSound()
 }
 
 ##################
+# Tweet.
+##################
+function twWether()
+{
+	# Check Exist Tw Command.
+	type tw || exit
+
+	# Check Exist Voice Text and Set Twitter User Account.
+	if [! ${VOICE_TEXT} = '' ] && [! ${TW_USER} = '' ]
+	then
+		# Tweet Wether.
+		tw --dm:to=${TW_USER} ${VOICE_TEXT}
+	fi
+}
+
+##################
 # Create Sound.
 ##################
 function createSound()
 {
 	# Create Sound.	
-	shoukun.sh `check_wether.sh`
+	VOICE_TEXT=`check_wether.sh`
+	shoukun.sh ${VOICE_TEXT}
 }
 
 ##################
@@ -107,35 +124,31 @@ umask 000
 
 # Speak Time.
 # Execute after AM 08:30 
-TIME=0830
+TIME=0900
+
+# Twitter User.
+TW_USER=''
 
 # Lock File.
 LOCK=/tmp/voice.lock
 
 # Target File.
 VOICE_FILE='/tmp/moyamoya.wav'
-if [ $# -eq 0 ]
-then
-	# Exit.
-	exit
-fi
 
-if [ ${1} == 'make' ]
-then
-	# Delete old File.
-	deleteOld
+# Delete old File.
+deleteOld
 	
-	# Make Voice File.
-	createSound
+# Make Voice File.
+createSound
 
-elif [ ${1} == 'speak' ]
+if [ ${1} == 'force' ]
 then
-	if [ $# -ge 2 ] && [ ${2} == 'force' ]
-	then
-		# Speak force.
-		speakSound
-	else
-		# Speak.
-		speakVoice
-	fi
+	# Speak force.
+	speakSound
+else
+	# Speak.
+	speakVoice
+
+	# Twitter.
+	twWether
 fi
