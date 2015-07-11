@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/07/10
-# Ver   : 0.9.8
+# Data  : 2015/07/11
+# Ver   : 0.9.9
 ################################
 
 ##################
@@ -81,10 +81,10 @@ function speakSound()
 function twWether()
 {
 	# Check Exist Tw Command.
-	type tw || exit
+	type tw >/dev/null 2>&1 || exit
 
 	# Check Exist Voice Text and Set Twitter User Account.
-	if [! ${VOICE_TEXT} = '' ] && [! ${TW_USER} = '' ]
+	if [ ! ${VOICE_TEXT} == '' ] && [ ! ${TW_USER} == '' ]
 	then
 		# Tweet Wether.
 		yes | tw --dm:to=${TW_USER} ${VOICE_TEXT}
@@ -127,7 +127,10 @@ umask 000
 TIME=0900
 
 # Twitter User.
-TW_USER=''
+TW_USER='your twitter account'
+
+# Voice Text Data.
+VOICE_TEXT=''
 
 # Lock File.
 LOCK=/tmp/voice.lock
@@ -141,14 +144,8 @@ deleteOld
 # Make Voice File.
 createSound
 
-if [ ${1} == 'force' ]
-then
-	# Speak force.
-	speakSound
-else
-	# Speak.
-	speakVoice
+# Speak.
+speakVoice
 
-	# Twitter.
-	twWether
-fi
+# Twitter.
+twWether
