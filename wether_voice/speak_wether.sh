@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/07/11
-# Ver   : 1.0.2
+# Ver   : 1.0.3
 ################################
 
 ##################
@@ -87,10 +87,10 @@ function twWether()
 	if [ ! ${VOICE_TEXT} == '' ] && [ ! ${TW_USER} == '' ]
 	then
 		# Set Date.
-		DATE=`date "+%m/%d(%a) "`
+		DATE=`date "+%m/%d(%a)"`
 
 		# Tweet Wether.
-		yes | tw --dm:to=${TW_USER} ${DATE}${VOICE_TEXT}
+		tw --yes --conf="${TW_CONF}" --dm:to="${TW_USER}" "${DATE}${VOICE_TEXT}"
 	fi
 }
 
@@ -122,6 +122,12 @@ function deleteOld()
 # Path Setting.
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+# Lang Setting.
+LANG=ja_JP.UTF-8
+
+# Export Parameter.
+export PATH LANG
+
 # Umask Setting.
 umask 000
 
@@ -131,6 +137,9 @@ TIME=0900
 
 # Twitter User.
 TW_USER='your twitter account'
+
+# Twitter Conf.
+TW_CONF='/home/pi/.tw.yml'
 
 # Voice Text Data.
 VOICE_TEXT=''
