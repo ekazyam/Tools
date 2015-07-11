@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/07/11
-# Ver   : 1.0.1
+# Ver   : 1.0.2
 ################################
 
 ##################
@@ -69,7 +69,7 @@ function rewriteLock()
 function speakSound()
 {
 	# Speak.
-	aplay ${VOICE_FILE}
+	aplay -q ${VOICE_FILE} &
 
 	# Rewrite Lock File.
 	rewriteLock
@@ -130,7 +130,7 @@ umask 000
 TIME=0900
 
 # Twitter User.
-TW_USER='Rumcoke77'
+TW_USER='your twitter account'
 
 # Voice Text Data.
 VOICE_TEXT=''
