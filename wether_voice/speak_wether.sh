@@ -2,7 +2,7 @@
 ################################
 # Author: Rum Coke
 # Data  : 2015/07/11
-# Ver   : 0.9.9
+# Ver   : 1.0.1
 ################################
 
 ##################
@@ -86,8 +86,11 @@ function twWether()
 	# Check Exist Voice Text and Set Twitter User Account.
 	if [ ! ${VOICE_TEXT} == '' ] && [ ! ${TW_USER} == '' ]
 	then
+		# Set Date.
+		DATE=`date "+%m/%d(%a) "`
+
 		# Tweet Wether.
-		yes | tw --dm:to=${TW_USER} ${VOICE_TEXT}
+		yes | tw --dm:to=${TW_USER} ${DATE}${VOICE_TEXT}
 	fi
 }
 
@@ -127,7 +130,7 @@ umask 000
 TIME=0900
 
 # Twitter User.
-TW_USER='your twitter account'
+TW_USER='Rumcoke77'
 
 # Voice Text Data.
 VOICE_TEXT=''
