@@ -1,8 +1,8 @@
 #!/bin/bash
 ################################
 # Author: Rum Coke
-# Data  : 2015/07/11
-# Ver   : 1.0.3
+# Data  : 2015/07/14
+# Ver   : 1.0.4
 ################################
 
 ##################
@@ -89,8 +89,21 @@ function twWether()
 		# Set Date.
 		DATE=`date "+%m/%d(%a)"`
 
-		# Tweet Wether.
-		tw --yes --conf="${TW_CONF}" --dm:to="${TW_USER}" "${DATE}${VOICE_TEXT}"
+		# Command Setting.
+		CMD='tw --yes '
+	
+		# Check Conf File Path.
+		if [ ! ${TW_CONF} == '' ] && [ -e  ${TW_CONF} ]
+		then
+			# Conf Setting.	
+			CMD="${CMD} --conf=${TW_CONF}"
+		fi	
+
+		# Command Setting.
+		CMD="${CMD} --dm:to=${TW_USER} ${DATE}${VOICE_TEXT}"
+
+		# Execute Command.
+		eval '${CMD}'
 	fi
 }
 
@@ -139,7 +152,7 @@ TIME=0900
 TW_USER='your twitter account'
 
 # Twitter Conf.
-TW_CONF='/home/pi/.tw.yml'
+TW_CONF='tw command conf'
 
 # Voice Text Data.
 VOICE_TEXT=''
