@@ -1,0 +1,2 @@
+# Mail IP
+@reboot /home/pi/tools/mail_ip.sh > /dev/null 2>&1
